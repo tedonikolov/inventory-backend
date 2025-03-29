@@ -5,9 +5,11 @@ import bg.tuvarna.enums.ProfileRole;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
+import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logmanager.Level;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -85,13 +87,16 @@ public class KeycloakService {
                 String entity = response.readEntity(String.class);
                 if (entity.contains("errorMessage")) {
                     String errorMessage = entity.substring(entity.indexOf("errorMessage") + 15, entity.lastIndexOf("\""));
+
+                    LOG.log(Level.ERROR, errorMessage);
+
                     throw new CustomException(errorMessage, ErrorCode.AlreadyExists);
                 }
             }
         }
     }
 
-    public String loginUser(String username, String password) {
+    public String loginUser(String username, String password, RoutingContext request) {
         try {
             Keycloak keycloak = KeycloakBuilder.builder()
                     .serverUrl(clientServerUri)
@@ -104,6 +109,10 @@ public class KeycloakService {
                     .build();
             return keycloak.tokenManager().getAccessTokenString();
         } catch (Exception e) {
+            String ipAddress = request.request().remoteAddress().hostAddress();
+
+            LOG.log(Level.ERROR,"Login attempt from IP: " + ipAddress + " with username: " + username + " failed");
+
             throw new RuntimeException("Invalid credentials");
         }
     }

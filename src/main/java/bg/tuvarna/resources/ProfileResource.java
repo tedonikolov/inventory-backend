@@ -7,6 +7,7 @@ import bg.tuvarna.resources.execptions.ErrorCode;
 import bg.tuvarna.services.impl.KeycloakService;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.vertx.ext.web.RoutingContext;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +24,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 public class ProfileResource {
     @Inject
     SecurityIdentity securityIdentity;
+    @Inject
+    RoutingContext context;
 
     private final KeycloakService keycloakService;
 
@@ -49,7 +52,7 @@ public class ProfileResource {
     @PermitAll
     public Response loginUser(@RequestBody LoginDTO user) {
         try {
-            String token = keycloakService.loginUser(user.getUsername(), user.getPassword());
+            String token = keycloakService.loginUser(user.getUsername(), user.getPassword(), context);
             if (token == null) return Response.noContent().build();
             return Response.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
         } catch (Exception e) {
