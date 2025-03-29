@@ -7,6 +7,15 @@ public class CreateUserDTO {
     private String password;
     private EmployeePosition position;
 
+    public CreateUserDTO() {
+    }
+
+    public CreateUserDTO(String username, String password, EmployeePosition position) {
+        this.username = username;
+        this.password = password;
+        this.position = position;
+    }
+
     public String getUsername() {
         return username;
     }

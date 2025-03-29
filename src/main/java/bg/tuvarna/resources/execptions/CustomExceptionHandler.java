@@ -22,7 +22,11 @@ public class CustomExceptionHandler implements ExceptionMapper<CustomException> 
         if (exception.getErrorCode() == ErrorCode.EntityNotFound) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(new ErrorResponse(exception)).build();
-        } else {
+        } else if(exception.getErrorCode() == ErrorCode.WrongCredentials) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(new ErrorResponse(exception)).build();
+        }
+        else{
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(exception)).build();
         }

@@ -7,19 +7,19 @@ import java.time.LocalDateTime;
  * This class is used to encapsulate error details in a structured format.
  */
 public final class ErrorResponse {
-    private String error;
+    private String message;
     private int errorCode;
     private LocalDateTime timestamp;
 
     /**
      * Constructs an ErrorResponse with the specified error message, error code, and timestamp.
      *
-     * @param error the error message
+     * @param message the error message
      * @param errorCode the error code
      * @param timestamp the timestamp when the error occurred
      */
-    public ErrorResponse(String error, int errorCode, LocalDateTime timestamp) {
-        this.error = error;
+    public ErrorResponse(String message, int errorCode, LocalDateTime timestamp) {
+        this.message = message;
         this.errorCode = errorCode;
         this.timestamp = timestamp;
     }
@@ -38,17 +38,17 @@ public final class ErrorResponse {
      *
      * @return the error message
      */
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return message;
     }
 
     /**
      * Sets the error message.
      *
-     * @param error the error message to set
+     * @param message the error message to set
      */
-    public void setError(String error) {
-        this.error = error;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     /**

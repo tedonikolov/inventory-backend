@@ -1,6 +1,9 @@
 package bg.tuvarna.resources;
 
+import bg.tuvarna.enums.EmployeePosition;
+import bg.tuvarna.enums.ProfileRole;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.requests.LoggedUser;
 import bg.tuvarna.models.dto.requests.LoginDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
@@ -19,6 +22,8 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
+import java.util.stream.Collectors;
+
 @Path("/inventory-api/v1/profile")
 @ApplicationScoped
 public class ProfileResource {
@@ -36,7 +41,13 @@ public class ProfileResource {
     @GET
     @Authenticated
     public Response getProfile() {
-        return Response.ok(securityIdentity.getPrincipal().getName()).build();
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setUsername(securityIdentity.getPrincipal().getName());
+        loggedUser.setRoles(securityIdentity.getRoles().stream().filter(
+                role -> role.equals(ProfileRole.ADMIN.name()) || role.equals(ProfileRole.CLIENT.name()) || role.equals(EmployeePosition.MOL.name()) || role.equals(EmployeePosition.WORKER.name())
+        ).collect(Collectors.toSet()));
+
+        return Response.ok(loggedUser).build();
     }
 
     @POST
@@ -53,7 +64,7 @@ public class ProfileResource {
     public Response loginUser(@RequestBody LoginDTO user) {
         try {
             String token = keycloakService.loginUser(user.getUsername(), user.getPassword(), context);
-            if (token == null) return Response.noContent().build();
+
             return Response.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), ErrorCode.WrongCredentials);
