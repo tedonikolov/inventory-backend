@@ -1,0 +1,46 @@
+version: "3.8"
+networks:
+  inventory-network:
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: inventoryDB
+    networks:
+      - inventory-network
+    environment:
+      - POSTGRES_DB=inventoryDB
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+    ports:
+      - "5555:5432"
+
+  inventory_keycloak_db:
+    container_name: inventory_keycloak_db
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_USER: postgres
+      POSTGRES_DB: keycloak_db
+    ports:
+      - 5432:5432
+    networks:
+      - inventory-network
+
+  key:
+    image: quay.io/keycloak/keycloak:25.0.0
+    container_name: key
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://inventory_keycloak_db:5432/keycloak_db
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=1234
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: start-dev
+    ports:
+      - 8080:8080
+    depends_on:
+      - inventory_keycloak_db
+    networks:
+      - inventory-network
