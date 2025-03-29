@@ -1,4 +1,4 @@
-package com.tuvarna.bg;
+package bg.tuvarna;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

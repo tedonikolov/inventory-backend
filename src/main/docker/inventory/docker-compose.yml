@@ -27,16 +27,16 @@ services:
     networks:
       - inventory-network
 
-  key:
+  authentication-service:
     image: quay.io/keycloak/keycloak:25.0.0
-    container_name: key
+    container_name: authentication-service
     environment:
       - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://inventory_keycloak_db:5432/keycloak_db
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=1234
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_ADMIN=exit
+      - KEYCLOAK_ADMIN_PASSWORD=tixe
     command: start-dev
     ports:
       - 8080:8080
