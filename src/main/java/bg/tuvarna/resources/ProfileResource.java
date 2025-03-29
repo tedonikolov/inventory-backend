@@ -3,7 +3,7 @@ package bg.tuvarna.resources;
 import bg.tuvarna.enums.EmployeePosition;
 import bg.tuvarna.enums.ProfileRole;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
-import bg.tuvarna.models.dto.requests.LoggedUser;
+import bg.tuvarna.models.dto.response.LoggedUser;
 import bg.tuvarna.models.dto.requests.LoginDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;

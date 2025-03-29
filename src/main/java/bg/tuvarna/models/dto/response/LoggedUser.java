@@ -1,4 +1,4 @@
-package bg.tuvarna.models.dto.requests;
+package bg.tuvarna.models.dto.response;
 
 import java.util.Set;
 
