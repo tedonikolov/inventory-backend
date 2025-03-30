@@ -2,8 +2,9 @@ package bg.tuvarna.models.entities;
 
 import bg.tuvarna.enums.DepreciationType;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -11,6 +12,9 @@ public class Category extends PanacheEntity {
     private String name;
     private DepreciationType depreciation_field;
     private Double reduction_step;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<Item> items;
 
     public String getName() {
         return name;
@@ -34,5 +38,13 @@ public class Category extends PanacheEntity {
 
     public void setReduction_step(Double reduction_step) {
         this.reduction_step = reduction_step;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 }
