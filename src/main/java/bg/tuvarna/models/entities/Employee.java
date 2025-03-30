@@ -4,6 +4,8 @@ import bg.tuvarna.enums.EmployeePosition;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "employees")
 public class Employee extends PanacheEntity {
@@ -15,6 +17,9 @@ public class Employee extends PanacheEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
     private Department department;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<Card> cards;
 
     public Department getDepartment() {
         return department;
@@ -57,5 +62,13 @@ public class Employee extends PanacheEntity {
 
     public void setPosition(EmployeePosition position) {
         this.position = position;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 }
