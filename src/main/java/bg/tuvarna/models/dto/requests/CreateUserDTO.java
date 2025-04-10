@@ -4,16 +4,26 @@ import bg.tuvarna.enums.EmployeePosition;
 
 public class CreateUserDTO {
     private String username;
+    private String email;
     private String password;
     private EmployeePosition position;
 
     public CreateUserDTO() {
     }
 
-    public CreateUserDTO(String username, String password, EmployeePosition position) {
+    public CreateUserDTO(String username, String email, String password, EmployeePosition position) {
         this.username = username;
+        this.email = email;
         this.password = password;
         this.position = position;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
