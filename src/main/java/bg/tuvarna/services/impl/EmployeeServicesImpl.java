@@ -3,10 +3,12 @@ package bg.tuvarna.services.impl;
 import bg.tuvarna.models.dto.ChangeRoleDTO;
 import bg.tuvarna.models.dto.EmployeeDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.entities.Department;
 import bg.tuvarna.models.entities.Employee;
 import bg.tuvarna.reporsitory.EmployeeRepository;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
+import bg.tuvarna.services.DepartmentService;
 import bg.tuvarna.services.EmployeeServices;
 import bg.tuvarna.services.converters.impl.EmployeeConverter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,11 +22,13 @@ public class EmployeeServicesImpl implements EmployeeServices {
     private final EmployeeRepository repository;
     private final KeycloakService keycloakService;
     private final EmployeeConverter converter;
+    private final DepartmentService departmentService;
 
-    public EmployeeServicesImpl(EmployeeRepository repository, KeycloakService keycloakService, EmployeeConverter converter) {
+    public EmployeeServicesImpl(EmployeeRepository repository, KeycloakService keycloakService, EmployeeConverter converter, DepartmentService departmentService) {
         this.repository = repository;
         this.keycloakService = keycloakService;
         this.converter = converter;
+        this.departmentService = departmentService;
     }
 
     @Override
@@ -32,7 +36,14 @@ public class EmployeeServicesImpl implements EmployeeServices {
     public void save(EmployeeDTO employeeDTO) {
         keycloakService.registerUser(new CreateUserDTO(employeeDTO.username(), employeeDTO.email(), employeeDTO.password(), employeeDTO.employeePosition()));
 
-        repository.persist(converter.convertToEntity(employeeDTO));
+        Employee employee = converter.convertToEntity(employeeDTO);
+
+        repository.persist(employee);
+
+        Department department = departmentService.findDepartmentById(employeeDTO.departmentId());
+        employee.setDepartment(department);
+
+        repository.persist(employee);
     }
 
     @Override
