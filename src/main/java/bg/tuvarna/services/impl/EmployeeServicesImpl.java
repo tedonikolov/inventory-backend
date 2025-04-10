@@ -10,6 +10,7 @@ import bg.tuvarna.resources.execptions.ErrorCode;
 import bg.tuvarna.services.EmployeeServices;
 import bg.tuvarna.services.converters.impl.EmployeeConverter;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,13 +28,15 @@ public class EmployeeServicesImpl implements EmployeeServices {
     }
 
     @Override
+    @Transactional
     public void save(EmployeeDTO employeeDTO) {
-        keycloakService.registerUser(new CreateUserDTO(employeeDTO.username(), employeeDTO.email(), null, employeeDTO.employeePosition()));
+        keycloakService.registerUser(new CreateUserDTO(employeeDTO.username(), employeeDTO.email(), employeeDTO.password(), employeeDTO.employeePosition()));
 
         repository.persist(converter.convertToEntity(employeeDTO));
     }
 
     @Override
+    @Transactional
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = findEmployeeById(employeeDTO.id());
         if (employee.getPosition() != employeeDTO.employeePosition()) {

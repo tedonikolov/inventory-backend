@@ -13,6 +13,7 @@ public class EmployeeConverter implements Converter<EmployeeDTO, Employee> {
                 entity.getFullName(),
                 entity.getUsername(),
                 entity.getEmail(),
+                null,
                 entity.getPosition(),
                 entity.getDepartment().id
         );
