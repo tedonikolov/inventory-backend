@@ -67,6 +67,7 @@ public class EmployeeResource {
     }
 
     @GET
+    @Path("/all")
     @RolesAllowed("ADMIN")
     @Operation(summary = "Returns the employees.",
             description = "Used to return employees.")

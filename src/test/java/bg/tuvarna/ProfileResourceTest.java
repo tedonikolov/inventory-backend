@@ -26,7 +26,7 @@ public class ProfileResourceTest {
     @Test
     @Order(1)
     void testUNAUTHORIZEDRegister() {
-        CreateUserDTO userDto = new CreateUserDTO("username1", "password", EmployeePosition.MOL);
+        CreateUserDTO userDto = new CreateUserDTO("username1", "email", "password", EmployeePosition.MOL);
         given()
                 .contentType(ContentType.JSON)
                 .body(userDto)
@@ -75,7 +75,7 @@ public class ProfileResourceTest {
                 .extract()
                 .header("Authorization");
 
-        CreateUserDTO userDto = new CreateUserDTO("test", "test", EmployeePosition.WORKER);
+        CreateUserDTO userDto = new CreateUserDTO("test", "test@test.test", "test", EmployeePosition.WORKER);
         given()
                 .contentType(ContentType.JSON)
                 .header("Authorization", token)
@@ -99,7 +99,7 @@ public class ProfileResourceTest {
                 .extract()
                 .header("Authorization");
 
-        CreateUserDTO userDto = new CreateUserDTO("test2", "tes2", EmployeePosition.WORKER);
+        CreateUserDTO userDto = new CreateUserDTO("test2", "email2", "tes2", EmployeePosition.WORKER);
         given()
                 .contentType(ContentType.JSON)
                 .header("Authorization", token)
@@ -131,5 +131,29 @@ public class ProfileResourceTest {
                 .statusCode(200)
                 .body("username", equalTo("test"))
                 .body("roles", equalTo(List.of("WORKER", "CLIENT")));
+    }
+
+    @Test
+    @Order(7)
+    void testInvalidEmail() {
+        LoginDTO loginDTO = new LoginDTO("admin", "admin");
+        String token = given()
+                .contentType(ContentType.JSON)
+                .body(loginDTO)
+                .when().post("/inventory-api/v1/profile/login")
+                .then()
+                .statusCode(200)
+                .header("Authorization", notNullValue())
+                .extract()
+                .header("Authorization");
+
+        CreateUserDTO userDto = new CreateUserDTO("test", "test", "test", EmployeePosition.WORKER);
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", token)
+                .body(userDto)
+                .when().post("/inventory-api/v1/profile/register")
+                .then()
+                .statusCode(400);
     }
 }
