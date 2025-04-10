@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class DepartmentServiceImp implements DepartmentService {
+public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository repository;
     private final DepartmentConverter converter;
 
-    public DepartmentServiceImp(DepartmentRepository departmentRepository, DepartmentConverter converter) {
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository, DepartmentConverter converter) {
         repository = departmentRepository;
         this.converter = converter;
     }
@@ -26,7 +26,7 @@ public class DepartmentServiceImp implements DepartmentService {
     @Override
     @Transactional
     public void save(DepartmentDTO department) {
-        if (findDepartmentByName(department.name()) == null) {
+        if (findDepartmentByName(department.name()) != null) {
             throw new CustomException("Department already exists", ErrorCode.AlreadyExists);
         }
 
