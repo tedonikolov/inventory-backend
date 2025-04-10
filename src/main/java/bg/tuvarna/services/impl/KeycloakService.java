@@ -2,6 +2,7 @@ package bg.tuvarna.services.impl;
 
 import bg.tuvarna.enums.EmployeePosition;
 import bg.tuvarna.enums.ProfileRole;
+import bg.tuvarna.models.dto.ChangeRoleDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
@@ -55,6 +56,7 @@ public class KeycloakService {
 
         UserRepresentation user = new UserRepresentation();
         user.setUsername(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
         user.setEnabled(true);
 
         Response response = realmResource.users().create(user);
@@ -221,5 +223,18 @@ public class KeycloakService {
                 .get(ADMIN.name()).toRepresentation();
 
         realmResource.users().get(userId).roles().realmLevel().add(Collections.singletonList(defaultRole));
+    }
+
+    public void changeRole(ChangeRoleDTO changeRoleDTO) {
+        Keycloak keycloak = getKeycloakClient();
+        RealmResource realmResource = keycloak.realms().realm(realm);
+
+        UserRepresentation user = realmResource.users().searchByEmail(changeRoleDTO.email(), true).getFirst();
+        RoleRepresentation role = realmResource.roles().get(changeRoleDTO.oldRole().name()).toRepresentation();
+
+        realmResource.users().get(user.getId()).roles().realmLevel().remove(Collections.singletonList(role));
+
+        role = realmResource.roles().get(changeRoleDTO.newRole().name()).toRepresentation();
+        realmResource.users().get(user.getId()).roles().realmLevel().add(Collections.singletonList(role));
     }
 }
