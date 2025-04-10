@@ -9,6 +9,7 @@ public interface EmployeeServices {
     void save(EmployeeDTO employeeDTO);
     void update(EmployeeDTO employeeDTO);
     EmployeeDTO getEmployeeById(Long id);
+    EmployeeDTO getEmployeeByUsername(String username);
     Employee findEmployeeById(Long id);
     List<EmployeeDTO> getAllEmployees();
 }

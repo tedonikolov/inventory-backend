@@ -49,6 +49,13 @@ public class EmployeeServicesImpl implements EmployeeServices {
     }
 
     @Override
+    public EmployeeDTO getEmployeeByUsername(String username) {
+        return repository.find("username",username).firstResultOptional()
+                .map(converter::convertToDto)
+                .orElseThrow(() -> new CustomException("Employee not found", ErrorCode.EntityNotFound));
+    }
+
+    @Override
     public Employee findEmployeeById(Long id) {
         return repository.findByIdOptional(id).orElseThrow(() ->
                 new CustomException("Employee not found", ErrorCode.EntityNotFound));

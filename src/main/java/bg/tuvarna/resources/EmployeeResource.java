@@ -78,4 +78,17 @@ public class EmployeeResource {
     public Response getAllEmployees() {
         return Response.ok(service.getAllEmployees()).build();
     }
+
+    @GET
+    @Authenticated
+    @Operation(summary = "Returns the employee.",
+            description = "Used to return employee info by id.")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successful returns",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = EmployeeDTO.class)))
+    })
+    public Response getEmployeeByUsername(@QueryParam("name") String name) {
+        return Response.ok(service.getEmployeeByUsername(name)).build();
+    }
 }
