@@ -1,12 +1,13 @@
 package bg.tuvarna.services;
 
 import bg.tuvarna.models.dto.DepartmentDTO;
+import bg.tuvarna.models.dto.requests.DepartmentWithImageDTO;
 import bg.tuvarna.models.entities.Department;
 
 import java.util.List;
 
 public interface DepartmentService {
-    void save(DepartmentDTO department);
+    void save(DepartmentWithImageDTO department);
 
     void removeDepartment(Long id);
 

@@ -1,17 +1,18 @@
 package bg.tuvarna.resources;
 
 import bg.tuvarna.models.dto.DepartmentDTO;
+import bg.tuvarna.models.dto.requests.DepartmentWithImageDTO;
 import bg.tuvarna.resources.execptions.ErrorResponse;
 import bg.tuvarna.services.DepartmentService;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
@@ -26,6 +27,7 @@ public class DepartmentResource {
 
     @POST
     @RolesAllowed("ADMIN")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Save or update department.",
             description = "Used to save or update department.")
     @APIResponses(value = {
@@ -36,7 +38,7 @@ public class DepartmentResource {
             @APIResponse(responseCode = "404", description = "Department not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))})
-    public Response save(@RequestBody DepartmentDTO dto) {
+    public Response save(DepartmentWithImageDTO dto) {
         service.save(dto);
         return Response.ok().build();
     }

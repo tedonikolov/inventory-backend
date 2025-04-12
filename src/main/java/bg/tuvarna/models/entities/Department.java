@@ -10,6 +10,7 @@ import java.util.List;
 public class Department extends PanacheEntity {
     private String name;
     private String description;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Employee> employees;
@@ -44,5 +45,13 @@ public class Department extends PanacheEntity {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

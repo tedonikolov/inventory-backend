@@ -4,16 +4,20 @@ import bg.tuvarna.models.dto.DepartmentDTO;
 import bg.tuvarna.models.entities.Department;
 import bg.tuvarna.services.converters.Converter;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class DepartmentConverter implements Converter<DepartmentDTO, Department> {
+    @ConfigProperty(name = "department.image.path")
+    String pathToImage;
 
     @Override
     public DepartmentDTO convertToDto(Department entity) {
-       return new DepartmentDTO(entity.id,
-               entity.getName(),
-               entity.getDescription()
-       );
+        return new DepartmentDTO(entity.id,
+                entity.getName(),
+                entity.getDescription(),
+                entity.getImageUrl()!=null ? pathToImage + entity.getImageUrl() : null
+        );
     }
 
     @Override

@@ -26,6 +26,16 @@ dependencies {
     implementation 'io.quarkus:quarkus-keycloak-admin-rest-client'
     implementation 'io.quarkus:quarkus-keycloak-authorization'
 
+    implementation 'org.bytedeco:javacv:1.5.5'
+    implementation 'org.bytedeco:ffmpeg:4.3.2-1.5.5'
+    implementation 'org.bytedeco:ffmpeg-platform:4.3.2-1.5.5'
+    implementation 'org.bytedeco:ffmpeg-platform-gpl:4.3.2-1.5.5'
+    implementation 'org.bytedeco:opencv:4.3.2-1.5.5'
+    implementation 'org.sejda.imageio:webp-imageio:0.1.6'
+
+    implementation platform('software.amazon.awssdk:bom:2.20.50')
+    implementation 'software.amazon.awssdk:s3'
+
     testImplementation 'org.testcontainers:testcontainers:1.19.0'
     testImplementation 'org.testcontainers:junit-jupiter:1.19.0'
     testImplementation "org.testcontainers:postgresql:1.19.0"
