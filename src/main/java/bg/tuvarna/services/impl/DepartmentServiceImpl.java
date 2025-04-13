@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -33,17 +34,22 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void save(DepartmentWithImageDTO request) {
         DepartmentDTO department = request.getDto();
 
-        if (findDepartmentByName(department.name()) != null) {
-            throw new CustomException("Department already exists", ErrorCode.AlreadyExists);
-        }
-
         if (department.id() != null) {
             Department entity = findDepartmentById(department.id());
+
+            if (!Objects.equals(entity.getName(), department.name()) && findDepartmentByName(department.name()) != null) {
+                throw new CustomException("Department already exists", ErrorCode.AlreadyExists);
+            }
+
             repository.persist(converter.updateEntity(entity, department));
 
             setImage(entity, request);
             repository.persist(entity);
         } else {
+            if (findDepartmentByName(department.name()) != null) {
+                throw new CustomException("Department already exists", ErrorCode.AlreadyExists);
+            }
+
             Department entity = converter.convertToEntity(department);
 
             setImage(entity, request);
