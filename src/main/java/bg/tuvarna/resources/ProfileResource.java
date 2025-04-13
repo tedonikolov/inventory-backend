@@ -2,7 +2,7 @@ package bg.tuvarna.resources;
 
 import bg.tuvarna.enums.EmployeePosition;
 import bg.tuvarna.enums.ProfileRole;
-import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.requests.ChangePasswordDTO;
 import bg.tuvarna.models.dto.response.LoggedUser;
 import bg.tuvarna.models.dto.requests.LoginDTO;
 import bg.tuvarna.resources.execptions.CustomException;
@@ -12,11 +12,11 @@ import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
@@ -50,11 +50,12 @@ public class ProfileResource {
         return Response.ok(loggedUser).build();
     }
 
-    @POST
-    @Path("/register")
-    @RolesAllowed("ADMIN")
-    public Response addProfile(@RequestBody CreateUserDTO userDto) {
-        keycloakService.registerUser(userDto);
+    @PUT
+    @Path("/changePassword")
+    @Authenticated
+    public Response changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        keycloakService.changePassword(changePasswordDTO);
+
         return Response.ok().build();
     }
 

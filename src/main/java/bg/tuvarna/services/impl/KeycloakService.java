@@ -3,6 +3,7 @@ package bg.tuvarna.services.impl;
 import bg.tuvarna.enums.EmployeePosition;
 import bg.tuvarna.enums.ProfileRole;
 import bg.tuvarna.models.dto.ChangeRoleDTO;
+import bg.tuvarna.models.dto.requests.ChangePasswordDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
@@ -117,6 +118,20 @@ public class KeycloakService {
 
             throw new RuntimeException("Invalid credentials");
         }
+    }
+
+    public void changePassword(ChangePasswordDTO changePasswordDTO) {
+        Keycloak keycloak = getKeycloakClient();
+        RealmResource realmResource = keycloak.realms().realm(realm);
+
+        String userId = realmResource.users().search(changePasswordDTO.username()).getFirst().getId();
+
+        CredentialRepresentation passwordCred = new CredentialRepresentation();
+        passwordCred.setTemporary(false);
+        passwordCred.setType(CredentialRepresentation.PASSWORD);
+        passwordCred.setValue(changePasswordDTO.password());
+
+        realmResource.users().get(userId).resetPassword(passwordCred);
     }
 
     public void setupKeycloak() {
