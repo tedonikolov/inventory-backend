@@ -6,7 +6,9 @@ public class CreateUserDTO {
     private String username;
     private String email;
     private String password;
+    private String fullName;
     private EmployeePosition position;
+    private Long departmentId;
 
     public CreateUserDTO() {
     }
@@ -48,5 +50,21 @@ public class CreateUserDTO {
 
     public void setPosition(EmployeePosition position) {
         this.position = position;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

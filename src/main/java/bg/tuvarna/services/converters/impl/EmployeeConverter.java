@@ -4,18 +4,22 @@ import bg.tuvarna.models.dto.EmployeeDTO;
 import bg.tuvarna.models.entities.Employee;
 import bg.tuvarna.services.converters.Converter;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class EmployeeConverter implements Converter<EmployeeDTO, Employee> {
+    @ConfigProperty(name = "employee.image.path")
+    String pathToImage;
+
     @Override
     public EmployeeDTO convertToDto(Employee entity) {
         return new EmployeeDTO(entity.id,
                 entity.getFullName(),
                 entity.getUsername(),
                 entity.getEmail(),
-                null,
                 entity.getPosition(),
-                entity.getDepartment().id
+                entity.getDepartment().id,
+                entity.getImageUrl() != null ? pathToImage + entity.getImageUrl() : null
         );
     }
 

@@ -13,6 +13,7 @@ public class Employee extends PanacheEntity {
     private String fullName;
     private String email;
     private EmployeePosition position;
+    private String imageUrl;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
@@ -70,5 +71,13 @@ public class Employee extends PanacheEntity {
 
     public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

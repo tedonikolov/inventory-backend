@@ -1,6 +1,8 @@
 package bg.tuvarna.resources;
 
 import bg.tuvarna.models.dto.EmployeeDTO;
+import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.requests.EmployeeWithImageDTO;
 import bg.tuvarna.resources.execptions.ErrorResponse;
 import bg.tuvarna.services.EmployeeServices;
 import io.quarkus.security.Authenticated;
@@ -33,13 +35,13 @@ public class EmployeeResource {
             @APIResponse(responseCode = "404", description = "Employee not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))})
-    public Response save(@RequestBody EmployeeDTO dto) {
+    public Response save(@RequestBody CreateUserDTO dto) {
         service.save(dto);
         return Response.ok().build();
     }
 
     @PUT
-    @RolesAllowed("ADMIN")
+    @Authenticated
     @Operation(summary = "Update employee.",
             description = "Used to update employee by id.")
     @APIResponses(value = {
@@ -47,8 +49,8 @@ public class EmployeeResource {
             @APIResponse(responseCode = "404", description = "Employee not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))})
-    public Response update(@RequestBody EmployeeDTO dto) {
-        service.update(dto);
+    public Response update(EmployeeWithImageDTO employeeWithImageDTO) {
+        service.update(employeeWithImageDTO);
         return Response.ok().build();
     }
 
