@@ -3,7 +3,9 @@ package bg.tuvarna;
 import bg.tuvarna.enums.EmployeePosition;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
 import bg.tuvarna.models.dto.requests.LoginDTO;
+import bg.tuvarna.services.DepartmentService;
 import bg.tuvarna.testResourcesManager.TestContainersResource;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.restassured.http.ContentType;
@@ -17,20 +19,23 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.when;
 
 @QuarkusTest
 @QuarkusTestResource(TestContainersResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProfileResourceTest {
+    @InjectMock
+    DepartmentService departmentService;
 
     @Test
     @Order(1)
     void testUNAUTHORIZEDRegister() {
-        CreateUserDTO userDto = new CreateUserDTO("username1", "email", "password", EmployeePosition.MOL);
+        CreateUserDTO userDto = new CreateUserDTO("username1", "email", "password", EmployeePosition.MOL, 1L);
         given()
                 .contentType(ContentType.JSON)
                 .body(userDto)
-                .when().post("/inventory-api/v1/profile/register")
+                .when().post("/inventory-api/v1/employees")
                 .then()
                 .statusCode(401);
     }
@@ -75,12 +80,14 @@ public class ProfileResourceTest {
                 .extract()
                 .header("Authorization");
 
-        CreateUserDTO userDto = new CreateUserDTO("test", "test@test.test", "test", EmployeePosition.WORKER);
+        when(departmentService.findDepartmentById(1L)).thenReturn(null);
+
+        CreateUserDTO userDto = new CreateUserDTO("test", "test@test.test", "test", EmployeePosition.WORKER, 1L);
         given()
                 .contentType(ContentType.JSON)
                 .header("Authorization", token)
                 .body(userDto)
-                .when().post("/inventory-api/v1/profile/register")
+                .when().post("/inventory-api/v1/employees")
                 .then()
                 .statusCode(200);
     }
@@ -99,12 +106,12 @@ public class ProfileResourceTest {
                 .extract()
                 .header("Authorization");
 
-        CreateUserDTO userDto = new CreateUserDTO("test2", "email2", "tes2", EmployeePosition.WORKER);
+        CreateUserDTO userDto = new CreateUserDTO("test2", "email2", "tes2", EmployeePosition.WORKER, 1L);
         given()
                 .contentType(ContentType.JSON)
                 .header("Authorization", token)
                 .body(userDto)
-                .when().post("/inventory-api/v1/profile/register")
+                .when().post("/inventory-api/v1/employees")
                 .then()
                 .statusCode(403);
     }
@@ -147,12 +154,12 @@ public class ProfileResourceTest {
                 .extract()
                 .header("Authorization");
 
-        CreateUserDTO userDto = new CreateUserDTO("test", "test", "test", EmployeePosition.WORKER);
+        CreateUserDTO userDto = new CreateUserDTO("test", "test", "test", EmployeePosition.WORKER, 1L);
         given()
                 .contentType(ContentType.JSON)
                 .header("Authorization", token)
                 .body(userDto)
-                .when().post("/inventory-api/v1/profile/register")
+                .when().post("/inventory-api/v1/employees")
                 .then()
                 .statusCode(400);
     }

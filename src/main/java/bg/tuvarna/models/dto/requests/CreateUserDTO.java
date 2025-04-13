@@ -13,7 +13,7 @@ public class CreateUserDTO {
     public CreateUserDTO() {
     }
 
-    public CreateUserDTO(String username, String email, String password, EmployeePosition position) {
+    public CreateUserDTO(String username, String email, String password, EmployeePosition position, Long departmentId) {
         this.username = username;
         this.email = email;
         this.password = password;
