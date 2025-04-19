@@ -10,7 +10,6 @@ import bg.tuvarna.resources.execptions.ErrorCode;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -93,21 +92,16 @@ public class KeycloakService {
         if (response.getStatus() != 201 || response.getStatus() != 200) {
             if (response.hasEntity()) {
                 String entity = response.readEntity(String.class);
-                try {
-                    JsonObject jsonResponse = Json.createReader(new StringReader(entity)).readObject();
-                    if (jsonResponse.containsKey("errorMessage")) {
-                        String errorMessage = jsonResponse.getString("errorMessage");
-                        LOG.log(Level.ERROR, errorMessage);
+                JsonObject jsonResponse = Json.createReader(new StringReader(entity)).readObject();
+                if (jsonResponse.containsKey("errorMessage")) {
+                    String errorMessage = jsonResponse.getString("errorMessage");
+                    LOG.log(Level.ERROR, errorMessage);
 
-                        if (Objects.equals(errorMessage, "error-invalid-email")) {
-                            throw new CustomException("Invalid email", ErrorCode.Failed);
-                        }
-
-                        throw new CustomException(errorMessage, ErrorCode.AlreadyExists);
+                    if (Objects.equals(errorMessage, "error-invalid-email")) {
+                        throw new CustomException("Invalid email", ErrorCode.Failed);
                     }
-                } catch (Exception e) {
-                    LOG.log(Level.ERROR, "Unexpected response: " + entity);
-                    throw new CustomException("Unexpected error occurred", ErrorCode.Failed);
+
+                    throw new CustomException(errorMessage, ErrorCode.AlreadyExists);
                 }
             }
         }
@@ -128,7 +122,7 @@ public class KeycloakService {
         } catch (Exception e) {
             String ipAddress = request.request().remoteAddress().hostAddress();
 
-            LOG.log(Level.ERROR,"Login attempt from IP: " + ipAddress + " with username: " + username + " failed");
+            LOG.log(Level.ERROR, "Login attempt from IP: " + ipAddress + " with username: " + username + " failed");
 
             throw new RuntimeException("Invalid credentials");
         }
@@ -189,7 +183,7 @@ public class KeycloakService {
                 }
             }
 
-            if(clientEmpty){
+            if (clientEmpty) {
                 setupAdmin();
             }
 
