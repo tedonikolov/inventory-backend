@@ -9,6 +9,9 @@ import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logmanager.Level;
@@ -18,6 +21,7 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.*;
 
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -88,12 +92,25 @@ public class KeycloakService {
         if (response.getStatus() != 201 || response.getStatus() != 200) {
             if (response.hasEntity()) {
                 String entity = response.readEntity(String.class);
-                if (entity.contains("errorMessage")) {
-                    String errorMessage = entity.substring(entity.indexOf("errorMessage") + 15, entity.lastIndexOf("\""));
+                try {
+                    JsonObject jsonResponse = Json.createReader(new StringReader(entity)).readObject();
+                    if (jsonResponse.containsKey("errorMessage")) {
+                        String errorMessage = jsonResponse.getString("errorMessage");
+                        LOG.log(Level.ERROR, errorMessage);
 
-                    LOG.log(Level.ERROR, errorMessage);
+                        if (jsonResponse.containsKey("params")) {
+                            JsonArray params = jsonResponse.getJsonArray("params");
+                            String invalidEmail = params.getString(1); // Assuming the email is at index 1
+                            LOG.log(Level.ERROR, "Invalid email: " + invalidEmail);
 
-                    throw new CustomException(errorMessage, ErrorCode.AlreadyExists);
+                            throw new CustomException("Invalid email", ErrorCode.Failed);
+                        }
+
+                        throw new CustomException(errorMessage, ErrorCode.AlreadyExists);
+                    }
+                } catch (Exception e) {
+                    LOG.log(Level.ERROR, "Unexpected response: " + entity);
+                    throw new CustomException("Unexpected error occurred", ErrorCode.Failed);
                 }
             }
         }
