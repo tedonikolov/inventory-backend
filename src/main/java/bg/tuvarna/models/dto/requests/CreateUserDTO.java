@@ -7,7 +7,7 @@ public class CreateUserDTO {
     private String email;
     private String password;
     private String fullName;
-    private EmployeePosition position;
+    private EmployeePosition employeePosition;
     private Long departmentId;
 
     public CreateUserDTO() {
@@ -17,7 +17,7 @@ public class CreateUserDTO {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.position = position;
+        this.employeePosition = position;
     }
 
     public String getEmail() {
@@ -45,11 +45,11 @@ public class CreateUserDTO {
     }
 
     public EmployeePosition getPosition() {
-        return position;
+        return employeePosition;
     }
 
     public void setPosition(EmployeePosition position) {
-        this.position = position;
+        this.employeePosition = position;
     }
 
     public Long getDepartmentId() {
