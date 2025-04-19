@@ -24,6 +24,7 @@ import org.keycloak.representations.idm.*;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static bg.tuvarna.enums.ProfileRole.*;
@@ -98,11 +99,7 @@ public class KeycloakService {
                         String errorMessage = jsonResponse.getString("errorMessage");
                         LOG.log(Level.ERROR, errorMessage);
 
-                        if (jsonResponse.containsKey("params")) {
-                            JsonArray params = jsonResponse.getJsonArray("params");
-                            String invalidEmail = params.getString(1); // Assuming the email is at index 1
-                            LOG.log(Level.ERROR, "Invalid email: " + invalidEmail);
-
+                        if (Objects.equals(errorMessage, "error-invalid-email")) {
                             throw new CustomException("Invalid email", ErrorCode.Failed);
                         }
 
