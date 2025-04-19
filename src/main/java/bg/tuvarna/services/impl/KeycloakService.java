@@ -10,6 +10,7 @@ import bg.tuvarna.resources.execptions.ErrorCode;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -103,6 +104,8 @@ public class KeycloakService {
 
                     throw new CustomException(errorMessage, ErrorCode.AlreadyExists);
                 }
+                LOG.log(Level.ERROR, "Unexpected response: " + entity);
+                throw new CustomException("Unexpected error occurred", ErrorCode.Failed);
             }
         }
     }
