@@ -45,7 +45,7 @@ public class EmployeeServicesImpl implements EmployeeServices {
         employee.setUsername(createUserDTO.getUsername());
         employee.setEmail(createUserDTO.getEmail());
         employee.setFullName(createUserDTO.getFullName());
-        employee.setPosition(createUserDTO.getPosition());
+        employee.setPosition(createUserDTO.getEmployeePosition());
 
         Department department = departmentService.findDepartmentById(createUserDTO.getDepartmentId());
         employee.setDepartment(department);

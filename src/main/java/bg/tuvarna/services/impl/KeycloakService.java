@@ -79,7 +79,7 @@ public class KeycloakService {
                 .get(CLIENT.name()).toRepresentation();
 
         RoleRepresentation employeeRole = realmResource.roles()
-                .get(userDto.getPosition().name()).toRepresentation();
+                .get(userDto.getEmployeePosition().name()).toRepresentation();
 
         realmResource.users().get(userId).roles().realmLevel().add(List.of(defaultRole, employeeRole));
     }

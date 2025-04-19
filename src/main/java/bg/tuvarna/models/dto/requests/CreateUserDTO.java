@@ -13,11 +13,11 @@ public class CreateUserDTO {
     public CreateUserDTO() {
     }
 
-    public CreateUserDTO(String username, String email, String password, EmployeePosition position, Long departmentId) {
+    public CreateUserDTO(String username, String email, String password, EmployeePosition employeePosition, Long departmentId) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.employeePosition = position;
+        this.employeePosition = employeePosition;
     }
 
     public String getEmail() {
@@ -44,11 +44,11 @@ public class CreateUserDTO {
         this.password = password;
     }
 
-    public EmployeePosition getPosition() {
+    public EmployeePosition getEmployeePosition() {
         return employeePosition;
     }
 
-    public void setPosition(EmployeePosition position) {
+    public void setEmployeePosition(EmployeePosition position) {
         this.employeePosition = position;
     }
 

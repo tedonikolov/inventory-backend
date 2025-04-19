@@ -9,6 +9,7 @@ import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -42,6 +43,7 @@ public class EmployeeResource {
 
     @PUT
     @Authenticated
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Update employee.",
             description = "Used to update employee by id.")
     @APIResponses(value = {
