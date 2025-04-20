@@ -22,6 +22,7 @@ public class Item extends PanacheEntity {
     private ItemStatus status;
     private Double amortization;
     private LocalDate toDate;
+    private LocalDate deregistrationDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
@@ -132,5 +133,13 @@ public class Item extends PanacheEntity {
 
     public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public LocalDate getDeregistrationDate() {
+        return deregistrationDate;
+    }
+
+    public void setDeregistrationDate(LocalDate deregistrationDate) {
+        this.deregistrationDate = deregistrationDate;
     }
 }

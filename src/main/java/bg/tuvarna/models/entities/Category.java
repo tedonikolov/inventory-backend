@@ -12,6 +12,8 @@ public class Category extends PanacheEntity {
     private String name;
     private DepreciationType depreciation_field;
     private Double reduction_step;
+    private Double maxAmortizationBeforeScrap;
+    private Integer maxYearsInUse;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Item> items;
@@ -46,5 +48,21 @@ public class Category extends PanacheEntity {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public Double getMaxAmortizationBeforeScrap() {
+        return maxAmortizationBeforeScrap;
+    }
+
+    public void setMaxAmortizationBeforeScrap(Double maxAmortizationBeforeScrap) {
+        this.maxAmortizationBeforeScrap = maxAmortizationBeforeScrap;
+    }
+
+    public Integer getMaxYearsInUse() {
+        return maxYearsInUse;
+    }
+
+    public void setMaxYearsInUse(Integer maxYearsInUse) {
+        this.maxYearsInUse = maxYearsInUse;
     }
 }
