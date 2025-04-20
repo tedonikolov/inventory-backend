@@ -10,8 +10,8 @@ import java.util.List;
 @Table(name = "categories")
 public class Category extends PanacheEntity {
     private String name;
-    private DepreciationType depreciation_field;
-    private Double reduction_step;
+    private DepreciationType depreciationField;
+    private Double reductionStep;
     private Double maxAmortizationBeforeScrap;
     private Integer maxYearsInUse;
 
@@ -26,20 +26,20 @@ public class Category extends PanacheEntity {
         this.name = name;
     }
 
-    public DepreciationType getDepreciation_field() {
-        return depreciation_field;
+    public DepreciationType getDepreciationField() {
+        return depreciationField;
     }
 
-    public void setDepreciation_field(DepreciationType depreciation_field) {
-        this.depreciation_field = depreciation_field;
+    public void setDepreciationField(DepreciationType depreciation_field) {
+        this.depreciationField = depreciation_field;
     }
 
-    public Double getReduction_step() {
-        return reduction_step;
+    public Double getReductionStep() {
+        return reductionStep;
     }
 
-    public void setReduction_step(Double reduction_step) {
-        this.reduction_step = reduction_step;
+    public void setReductionStep(Double reduction_step) {
+        this.reductionStep = reduction_step;
     }
 
     public List<Item> getItems() {
