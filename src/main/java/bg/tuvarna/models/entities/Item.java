@@ -17,8 +17,8 @@ public class Item extends PanacheEntity {
     private Double noAmortizationPrice;
     private Double amortizationPrice;
     private ItemType type;
-    private LocalDate acquisition_date;
-    private LocalDate exploitation_date;
+    private LocalDate acquisitionDate;
+    private LocalDate exploitationDate;
     private ItemStatus status;
     private Double amortization;
     private LocalDate toDate;
@@ -79,20 +79,20 @@ public class Item extends PanacheEntity {
         this.type = type;
     }
 
-    public LocalDate getAcquisition_date() {
-        return acquisition_date;
+    public LocalDate getAcquisitionDate() {
+        return acquisitionDate;
     }
 
-    public void setAcquisition_date(LocalDate acquisition_date) {
-        this.acquisition_date = acquisition_date;
+    public void setAcquisitionDate(LocalDate acquisition_date) {
+        this.acquisitionDate = acquisition_date;
     }
 
-    public LocalDate getExploitation_date() {
-        return exploitation_date;
+    public LocalDate getExploitationDate() {
+        return exploitationDate;
     }
 
-    public void setExploitation_date(LocalDate exploitation_date) {
-        this.exploitation_date = exploitation_date;
+    public void setExploitationDate(LocalDate exploitation_date) {
+        this.exploitationDate = exploitation_date;
     }
 
     public ItemStatus getStatus() {
