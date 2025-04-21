@@ -12,6 +12,7 @@ import bg.tuvarna.services.ItemService;
 import bg.tuvarna.services.S3Service;
 import bg.tuvarna.services.converters.impl.ItemConverter;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void save(ItemWithImageDTO request) {
         ItemDTO dto = request.getDto();
 
