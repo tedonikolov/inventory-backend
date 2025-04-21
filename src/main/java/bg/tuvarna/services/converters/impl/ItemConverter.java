@@ -3,8 +3,14 @@ package bg.tuvarna.services.converters.impl;
 import bg.tuvarna.models.dto.ItemDTO;
 import bg.tuvarna.models.entities.Item;
 import bg.tuvarna.services.converters.Converter;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+@ApplicationScoped
 public class ItemConverter implements Converter<ItemDTO, Item> {
+    @ConfigProperty(name = "item.image.path")
+    String pathToImage;
+
     @Override
     public ItemDTO convertToDto(Item entity) {
         return new ItemDTO(
@@ -21,7 +27,8 @@ public class ItemConverter implements Converter<ItemDTO, Item> {
                 entity.getAmortization(),
                 entity.getToDate(),
                 entity.getDeregistrationDate(),
-                entity.getCategory().id
+                entity.getCategory().id,
+                entity.getImagePath()!=null ? pathToImage + entity.getImagePath() : null
         );
     }
 

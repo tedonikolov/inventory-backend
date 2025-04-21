@@ -23,6 +23,7 @@ public class Item extends PanacheEntity {
     private Double amortization;
     private LocalDate toDate;
     private LocalDate deregistrationDate;
+    private String imagePath;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
@@ -141,5 +142,13 @@ public class Item extends PanacheEntity {
 
     public void setDeregistrationDate(LocalDate deregistrationDate) {
         this.deregistrationDate = deregistrationDate;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }
