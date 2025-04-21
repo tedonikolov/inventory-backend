@@ -16,7 +16,7 @@ public class ItemRepository implements PanacheRepository<Item> {
                 "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(name, ' ', number) LIKE :searchBy) and " +
                         "(:type IS NULL OR type=:type) and " +
                         "(:status IS NULL OR status=:status) and " +
-                        "(:category_id IS NULL OR organization.id=:category_id)",
+                        "(:category_id IS NULL OR category.id=:category_id)",
                 Parameters.with("searchBy", filter.getSearchBy() != null ? filter.getSearchBy().toLowerCase() : "")
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())
