@@ -17,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 @ApplicationScoped
-@Path("/inventory-api/v1/departments")
+@Path("/inventory-api/v1/categories")
 public class CategoryResource {
     private final CategoryService service;
 
