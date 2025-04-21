@@ -10,8 +10,8 @@ import java.time.LocalDate;
 
 @Entity(name = "cards")
 public class Card extends PanacheEntity {
-    private LocalDate BorrowDate;
-    private LocalDate ReturnDate;
+    private LocalDate borrowDate;
+    private LocalDate returnDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "item_id")
@@ -22,19 +22,19 @@ public class Card extends PanacheEntity {
     private Employee employee;
 
     public LocalDate getBorrowDate() {
-        return BorrowDate;
+        return borrowDate;
     }
 
     public void setBorrowDate(LocalDate borrowDate) {
-        BorrowDate = borrowDate;
+        this.borrowDate = borrowDate;
     }
 
     public LocalDate getReturnDate() {
-        return ReturnDate;
+        return returnDate;
     }
 
     public void setReturnDate(LocalDate returnDate) {
-        ReturnDate = returnDate;
+        this.returnDate = returnDate;
     }
 
     public Item getItem() {
