@@ -19,6 +19,7 @@ public record ItemDTO(
         Double amortization,
         LocalDate toDate,
         LocalDate deregistrationDate,
-        Long categoryId
+        Long categoryId,
+        String imageUrl
 ) {
 }
