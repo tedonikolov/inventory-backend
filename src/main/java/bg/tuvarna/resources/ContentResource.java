@@ -27,4 +27,12 @@ public class ContentResource {
     public Response getEmployee(@PathParam("fileName") String fileName) {
         return Response.ok(s3service.getFile("employee-images", fileName)).build();
     }
+
+    @GET
+    @Path("/item/{fileName}")
+    @PermitAll
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response getItem(@PathParam("fileName") String fileName) {
+        return Response.ok(s3service.getFile("item-images", fileName)).build();
+    }
 }
