@@ -13,11 +13,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class ItemRepository implements PanacheRepository<Item> {
     public PageListing<Item> findByFilter(ItemFilter filter) {
         PanacheQuery<Item> query = find(
-                "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(name, ' ', number) LIKE :searchBy) and " +
-                        "(:type IS NULL OR type=:type) and " +
-                        "(:status IS NULL OR status=:status) and " +
-                        "(:category_id IS NULL OR category.id=:category_id)",
-                Parameters.with("searchBy", filter.getSearchBy() != null ? filter.getSearchBy().toLowerCase() : "")
+                "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(name, ' ', number)) LIKE :searchBy) and " +
+                        "(:type IS NULL OR type = :type) and " +
+                        "(:status IS NULL OR status = :status) and " +
+                        "(:category_id IS NULL OR category.id = :category_id)",
+                Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())
                         .and("category_id", filter.getCategoryId()))
