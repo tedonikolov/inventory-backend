@@ -1,4 +1,4 @@
-docker stop $(docker ps -a -q)
+docker compose stop
 cd ../../../../../inventory-backend
 chmod +x ./gradlew
 ./gradlew clean assemble
