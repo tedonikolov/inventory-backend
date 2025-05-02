@@ -38,7 +38,7 @@ public class ItemServiceImpl implements ItemService {
         if (dto.id() != null) {
             Item entity = findItemById(dto.id());
 
-            if (!Objects.equals(entity.getNumber(), dto.number()) && findDepartmentByNumber(dto.number()) != null) {
+            if (!Objects.equals(entity.getNumber(), dto.number()) && findItemByNumber(dto.number()) != null) {
                 throw new CustomException("Item already exists", ErrorCode.AlreadyExists);
             }
 
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
             setImage(entity, request);
             repository.persist(entity);
         } else {
-            if (findDepartmentByNumber(dto.number()) != null) {
+            if (findItemByNumber(dto.number()) != null) {
                 throw new CustomException("Item already exists", ErrorCode.AlreadyExists);
             }
 
@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
         );
     }
 
-    private Item findDepartmentByNumber(String number) {
+    private Item findItemByNumber(String number) {
         return repository.find("LOWER(number)", number.toLowerCase()).firstResult();
     }
 }

@@ -21,14 +21,14 @@ public class CardRepository implements PanacheRepository<Card> {
 
     public PageListing<Card> findByFilter(CardFilter filter) {
         PanacheQuery<Card> query = find(
-                "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(item.name, ' ', item.number) LIKE :searchBy) and " +
-                        "(:type IS NULL OR item.type=:type) and " +
-                        "(:status IS NULL OR item.status=:status) and " +
-                        "(:category_id IS NULL OR item.category.id=:category_id) and " +
-                        "(:item_id IS NULL OR item.id=:item_id) and " +
-                        "(:department_id IS NULL OR employee.department.id=:department_id) and " +
-                        "(:employee_id IS NULL OR employee.id=:employee_id)",
-                Parameters.with("searchBy", filter.getSearchBy() != null ? filter.getSearchBy().toLowerCase() : "")
+                "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(item.name, ' ', item.number)) LIKE :searchBy) and " +
+                        "(:type IS NULL OR item.type = :type) and " +
+                        "(:status IS NULL OR item.status = :status) and " +
+                        "(:category_id IS NULL OR item.category.id = :category_id) and " +
+                        "(:item_id IS NULL OR item.id = :item_id) and " +
+                        "(:department_id IS NULL OR employee.department.id = :department_id) and " +
+                        "(:employee_id IS NULL OR employee.id = :employee_id)",
+                Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())
                         .and("category_id", filter.getCategoryId())
