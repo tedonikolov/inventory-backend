@@ -12,6 +12,7 @@ import bg.tuvarna.resources.execptions.ErrorCode;
 import bg.tuvarna.services.CardService;
 import bg.tuvarna.services.EmployeeServices;
 import bg.tuvarna.services.ItemService;
+import bg.tuvarna.services.converters.impl.ItemConverter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -22,11 +23,13 @@ public class CardServiceImpl implements CardService {
     private final CardRepository repository;
     private final ItemService itemService;
     private final EmployeeServices employeeService;
+    private final ItemConverter itemConverter;
 
-    public CardServiceImpl(CardRepository repository, ItemService itemService, EmployeeServices employeeService) {
+    public CardServiceImpl(CardRepository repository, ItemService itemService, EmployeeServices employeeService, ItemConverter itemConverter) {
         this.repository = repository;
         this.itemService = itemService;
         this.employeeService = employeeService;
+        this.itemConverter = itemConverter;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class CardServiceImpl implements CardService {
         PageListing<Card> pageListing = repository.findByFilter(filter);
         return new PageListing<CardDTO>(
                 pageListing.getItems().stream()
-                        .map(CardDTO::new)
+                        .map(card -> new CardDTO(card, itemConverter.convertToDto(card.getItem())))
                         .toList(),
                 pageListing.getCurrentPage(),
                 pageListing.getPageSize(),
@@ -76,6 +79,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CardDTO getItemById(Long id) {
-        return new CardDTO(findCardById(id));
+        Card card = findCardById(id);
+        return new CardDTO(card, itemConverter.convertToDto(card.getItem()));
     }
 }
