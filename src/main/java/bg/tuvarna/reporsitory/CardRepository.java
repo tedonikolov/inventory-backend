@@ -26,12 +26,14 @@ public class CardRepository implements PanacheRepository<Card> {
                         "(:status IS NULL OR item.status=:status) and " +
                         "(:category_id IS NULL OR item.category.id=:category_id) and " +
                         "(:item_id IS NULL OR item.id=:item_id) and " +
+                        "(:department_id IS NULL OR employee.department.id=:department_id) and " +
                         "(:employee_id IS NULL OR employee.id=:employee_id)",
                 Parameters.with("searchBy", filter.getSearchBy() != null ? filter.getSearchBy().toLowerCase() : "")
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())
                         .and("category_id", filter.getCategoryId())
                         .and("item_id", filter.getItemId())
+                        .and("department_id", filter.getDepartmentId())
                         .and("employee_id", filter.getEmployeeId()))
                 .page(Page.of(filter.getPage() - 1, filter.getItemsPerPage()));
 

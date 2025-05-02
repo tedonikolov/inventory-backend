@@ -14,7 +14,9 @@ public class CardFilter {
     private ItemType type;
     @QueryParam("categoryId")
     private Long categoryId;
-    @QueryParam("categoryId")
+    @QueryParam("departmentId")
+    private Long departmentId;
+    @QueryParam("itemId")
     private Long itemId;
     @QueryParam("employeeId")
     private Long employeeId;
@@ -35,6 +37,10 @@ public class CardFilter {
 
     public ItemType getType() {
         return type;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
     }
 
     public Long getCategoryId() {
