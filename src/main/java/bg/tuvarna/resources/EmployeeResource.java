@@ -85,6 +85,20 @@ public class EmployeeResource {
     }
 
     @GET
+    @Path("/byDepartment")
+    @RolesAllowed("MOL")
+    @Operation(summary = "Returns the employees for the department.",
+            description = "Used to return the employees for the department.")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successful returns",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = EmployeeDTO[].class)))
+    })
+    public Response getAllEmployeesForDepartment(@QueryParam("departmentId") Long departmentId) {
+        return Response.ok(service.getAllEmployeesForDepartment(departmentId)).build();
+    }
+
+    @GET
     @Authenticated
     @Operation(summary = "Returns the employee.",
             description = "Used to return employee info by id.")

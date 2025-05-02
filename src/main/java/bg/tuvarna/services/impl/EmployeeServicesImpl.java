@@ -98,4 +98,12 @@ public class EmployeeServicesImpl implements EmployeeServices {
     public List<EmployeeDTO> getAllEmployees() {
         return repository.findAll().stream().map(converter::convertToDto).collect(Collectors.toList());
     }
+
+    @Override
+    public List<EmployeeDTO> getAllEmployeesForDepartment(Long departmentId) {
+        return repository.find("department.id",departmentId)
+                .stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
 }
