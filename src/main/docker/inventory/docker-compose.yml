@@ -82,8 +82,8 @@ services:
       QUARKUS_LOG_FILE_ENABLE: TRUE
       QUARKUS_LOG_FILE_PATH: logs/inventory.log
       QUARKUS_LOG_FILE_ROTATION_MAX_BACKUP_INDEX: 1
-      QUARKUS_LOG_FILE_ROTATION_FILE_SUFFIX: .yyyy-MM-dd
-      QUARKUS_LOG_FILE_FORMAT: %d{yyyy-MM-dd HH:mm:ss} %-5p [%c] %s%e%n
+      QUARKUS_LOG_FILE_ROTATION_FILE_SUFFIX: ".yyyy-MM-dd"
+      QUARKUS_LOG_FILE_FORMAT: "%d{yyyy-MM-dd HH:mm:ss} %-5p [%c] %s%e%n"
       quarkus_s3_endpoint: http://storage:9000/s3
       quarkus_s3_aws_region: us-east-1
       quarkus_s3_aws_credentials_access_key_id: AKIAIOSFODNN7EXAMPLE
