@@ -8,6 +8,7 @@ import bg.tuvarna.models.entities.Item;
 import bg.tuvarna.reporsitory.ItemRepository;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
+import bg.tuvarna.services.CategoryService;
 import bg.tuvarna.services.ItemService;
 import bg.tuvarna.services.S3Service;
 import bg.tuvarna.services.converters.impl.ItemConverter;
@@ -22,12 +23,13 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final ItemConverter converter;
     private final S3Service s3Service;
+    private final CategoryService categoryService;
 
-
-    public ItemServiceImpl(ItemRepository repository, ItemConverter converter, S3Service s3Service) {
+    public ItemServiceImpl(ItemRepository repository, ItemConverter converter, S3Service s3Service, CategoryService categoryService) {
         this.repository = repository;
         this.converter = converter;
         this.s3Service = s3Service;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -42,6 +44,10 @@ public class ItemServiceImpl implements ItemService {
                 throw new CustomException("Item already exists", ErrorCode.AlreadyExists);
             }
 
+            if (dto.categoryId() != null) {
+                entity.setCategory(categoryService.findCategoryById(dto.categoryId()));
+            }
+
             repository.persist(converter.updateEntity(entity, dto));
 
             setImage(entity, request);
@@ -52,6 +58,10 @@ public class ItemServiceImpl implements ItemService {
             }
 
             Item entity = converter.convertToEntity(dto);
+
+            if (!Objects.equals(entity.getCategory().id, dto.categoryId())) {
+                entity.setCategory(categoryService.findCategoryById(dto.categoryId()));
+            }
 
             setImage(entity, request);
             repository.persist(entity);
