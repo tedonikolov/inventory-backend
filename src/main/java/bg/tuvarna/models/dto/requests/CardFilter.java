@@ -20,6 +20,8 @@ public class CardFilter {
     private Long itemId;
     @QueryParam("employeeId")
     private Long employeeId;
+    @QueryParam("returned")
+    private Boolean returned;
     @QueryParam("itemsPerPage")
     @DefaultValue("10")
     private Integer itemsPerPage;
@@ -53,6 +55,10 @@ public class CardFilter {
 
     public Long getEmployeeId() {
         return employeeId;
+    }
+
+    public Boolean isReturned() {
+        return returned;
     }
 
     public Integer getItemsPerPage() {

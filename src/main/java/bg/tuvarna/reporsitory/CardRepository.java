@@ -27,14 +27,16 @@ public class CardRepository implements PanacheRepository<Card> {
                         "(:category_id IS NULL OR item.category.id = :category_id) and " +
                         "(:item_id IS NULL OR item.id = :item_id) and " +
                         "(:department_id IS NULL OR employee.department.id = :department_id) and " +
-                        "(:employee_id IS NULL OR employee.id = :employee_id)",
+                        "(:employee_id IS NULL OR employee.id = :employee_id) and " +
+                        "(:dateIsNull IS NULL OR (returnDate IS NULL AND :dateIsNull = true) OR (returnDate IS NOT NULL AND :dateIsNull = false))",
                 Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())
                         .and("category_id", filter.getCategoryId())
                         .and("item_id", filter.getItemId())
                         .and("department_id", filter.getDepartmentId())
-                        .and("employee_id", filter.getEmployeeId()))
+                        .and("employee_id", filter.getEmployeeId())
+                        .and("dateIsNull", !filter.isReturned()))
                 .page(Page.of(filter.getPage() - 1, filter.getItemsPerPage()));
 
         return new PageListing<Card>(
