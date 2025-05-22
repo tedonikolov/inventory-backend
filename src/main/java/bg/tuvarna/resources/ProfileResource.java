@@ -7,17 +7,16 @@ import bg.tuvarna.models.dto.response.LoggedUser;
 import bg.tuvarna.models.dto.requests.LoginDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
+import bg.tuvarna.services.EmployeeServices;
 import bg.tuvarna.services.impl.KeycloakService;
+import bg.tuvarna.services.impl.NotificationSenderService;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -32,10 +31,14 @@ public class ProfileResource {
     @Inject
     RoutingContext context;
 
+    private final NotificationSenderService notificationSenderService;
     private final KeycloakService keycloakService;
+    private final EmployeeServices employeeServices;
 
-    public ProfileResource(KeycloakService keycloakService) {
+    public ProfileResource(NotificationSenderService notificationSenderService, KeycloakService keycloakService, EmployeeServices employeeServices) {
+        this.notificationSenderService = notificationSenderService;
         this.keycloakService = keycloakService;
+        this.employeeServices = employeeServices;
     }
 
     @GET
@@ -70,5 +73,16 @@ public class ProfileResource {
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), ErrorCode.WrongCredentials);
         }
+    }
+
+    @PermitAll
+    @GET
+    @Path("/sendPushNotification/{id}")
+    public Response test(@PathParam("id") Long id,
+                         @QueryParam("title") String title,
+                         @QueryParam("body") String body,
+                         @QueryParam("type") String type) {
+        notificationSenderService.sendPushNotification(employeeServices.findEmployeeById(id).getPhoneToken(),title,body,type,id);
+        return Response.ok().build();
     }
 }
