@@ -2,6 +2,7 @@ package bg.tuvarna.services;
 
 import bg.tuvarna.models.dto.EmployeeDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.requests.EmployeePhoneTokenDTO;
 import bg.tuvarna.models.dto.requests.EmployeeWithImageDTO;
 import bg.tuvarna.models.entities.Employee;
 
@@ -15,4 +16,5 @@ public interface EmployeeServices {
     Employee findEmployeeById(Long id);
     List<EmployeeDTO> getAllEmployees();
     List<EmployeeDTO> getAllEmployeesForDepartment(Long departmentId);
+    void changePhoneToken(EmployeePhoneTokenDTO employeeWithImageDTO);
 }

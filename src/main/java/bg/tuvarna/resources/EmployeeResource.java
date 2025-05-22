@@ -2,6 +2,7 @@ package bg.tuvarna.resources;
 
 import bg.tuvarna.models.dto.EmployeeDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.requests.EmployeePhoneTokenDTO;
 import bg.tuvarna.models.dto.requests.EmployeeWithImageDTO;
 import bg.tuvarna.resources.execptions.ErrorResponse;
 import bg.tuvarna.services.EmployeeServices;
@@ -53,6 +54,21 @@ public class EmployeeResource {
                             schema = @Schema(implementation = ErrorResponse.class)))})
     public Response update(EmployeeWithImageDTO employeeWithImageDTO) {
         service.update(employeeWithImageDTO);
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/phoneToken")
+    @Authenticated
+    @Operation(summary = "Update employee.",
+            description = "Used to update employee by id.")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Successful deleted"),
+            @APIResponse(responseCode = "404", description = "Employee not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))})
+    public Response changePhoneToken(EmployeePhoneTokenDTO employeeWithImageDTO) {
+        service.changePhoneToken(employeeWithImageDTO);
         return Response.ok().build();
     }
 

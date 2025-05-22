@@ -14,6 +14,7 @@ public class Employee extends PanacheEntity {
     private String email;
     private EmployeePosition position;
     private String imageUrl;
+    private String phoneToken;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
@@ -79,5 +80,13 @@ public class Employee extends PanacheEntity {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getPhoneToken() {
+        return phoneToken;
+    }
+
+    public void setPhoneToken(String phoneToken) {
+        this.phoneToken = phoneToken;
     }
 }

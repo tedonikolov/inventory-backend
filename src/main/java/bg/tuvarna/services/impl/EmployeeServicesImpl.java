@@ -3,6 +3,7 @@ package bg.tuvarna.services.impl;
 import bg.tuvarna.models.dto.ChangeRoleDTO;
 import bg.tuvarna.models.dto.EmployeeDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.requests.EmployeePhoneTokenDTO;
 import bg.tuvarna.models.dto.requests.EmployeeWithImageDTO;
 import bg.tuvarna.models.entities.Department;
 import bg.tuvarna.models.entities.Employee;
@@ -105,5 +106,13 @@ public class EmployeeServicesImpl implements EmployeeServices {
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
+    }
+
+    @Override
+    public void changePhoneToken(EmployeePhoneTokenDTO employeeWithImageDTO) {
+        Employee employee = findEmployeeById(employeeWithImageDTO.employeeId());
+        employee.setPhoneToken(employeeWithImageDTO.phoneToken());
+
+        repository.persist(employee);
     }
 }
