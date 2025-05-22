@@ -109,6 +109,7 @@ public class EmployeeServicesImpl implements EmployeeServices {
     }
 
     @Override
+    @Transactional
     public void changePhoneToken(EmployeePhoneTokenDTO employeeWithImageDTO) {
         Employee employee = findEmployeeById(employeeWithImageDTO.employeeId());
         employee.setPhoneToken(employeeWithImageDTO.phoneToken());
