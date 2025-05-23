@@ -23,6 +23,9 @@ public class Employee extends PanacheEntity {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Card> cards;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<Notification> notifications;
+
     public Department getDepartment() {
         return department;
     }
@@ -88,5 +91,13 @@ public class Employee extends PanacheEntity {
 
     public void setPhoneToken(String phoneToken) {
         this.phoneToken = phoneToken;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
