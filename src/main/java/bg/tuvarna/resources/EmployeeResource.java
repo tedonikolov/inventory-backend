@@ -63,7 +63,7 @@ public class EmployeeResource {
     @Operation(summary = "Update employee.",
             description = "Used to update employee by id.")
     @APIResponses(value = {
-            @APIResponse(responseCode = "200", description = "Successful deleted"),
+            @APIResponse(responseCode = "200", description = "Change phone token"),
             @APIResponse(responseCode = "404", description = "Employee not found",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))})

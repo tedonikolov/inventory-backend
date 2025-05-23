@@ -7,9 +7,7 @@ import bg.tuvarna.models.dto.response.LoggedUser;
 import bg.tuvarna.models.dto.requests.LoginDTO;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
-import bg.tuvarna.services.EmployeeServices;
 import bg.tuvarna.services.impl.KeycloakService;
-import bg.tuvarna.services.impl.NotificationSenderService;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.ext.web.RoutingContext;
@@ -31,14 +29,10 @@ public class ProfileResource {
     @Inject
     RoutingContext context;
 
-    private final NotificationSenderService notificationSenderService;
     private final KeycloakService keycloakService;
-    private final EmployeeServices employeeServices;
 
-    public ProfileResource(NotificationSenderService notificationSenderService, KeycloakService keycloakService, EmployeeServices employeeServices) {
-        this.notificationSenderService = notificationSenderService;
+    public ProfileResource(KeycloakService keycloakService) {
         this.keycloakService = keycloakService;
-        this.employeeServices = employeeServices;
     }
 
     @GET
@@ -73,16 +67,5 @@ public class ProfileResource {
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), ErrorCode.WrongCredentials);
         }
-    }
-
-    @PermitAll
-    @GET
-    @Path("/sendPushNotification/{id}")
-    public Response test(@PathParam("id") Long id,
-                         @QueryParam("title") String title,
-                         @QueryParam("body") String body,
-                         @QueryParam("type") String type) {
-        notificationSenderService.sendPushNotification(employeeServices.findEmployeeById(id).getPhoneToken(),title,body,type,id);
-        return Response.ok().build();
     }
 }
