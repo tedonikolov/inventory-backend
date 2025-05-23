@@ -1,5 +1,6 @@
 package bg.tuvarna.services.impl;
 
+import bg.tuvarna.models.dto.EmployeeDTO;
 import bg.tuvarna.models.dto.NotificationDTO;
 import bg.tuvarna.models.entities.Employee;
 import bg.tuvarna.models.entities.Notification;
@@ -44,6 +45,36 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationDTO.content(),
                     notificationDTO.type()
             );
+        }
+    }
+
+    @Override
+    public void createNotifyForDepartment(Long departmentId, NotificationDTO notificationDTO) {
+        for(EmployeeDTO employeeDTO : employeeServices.getAllEmployeesForDepartment(departmentId)) {
+            createNotify(new NotificationDTO(
+                    null,
+                    notificationDTO.title(),
+                    notificationDTO.content(),
+                    notificationDTO.type(),
+                    employeeDTO.id(),
+                    false,
+                    null
+            ));
+        }
+    }
+
+    @Override
+    public void createNotifyForAll(NotificationDTO notificationDTO) {
+        for(EmployeeDTO employeeDTO : employeeServices.getAllEmployees()) {
+            createNotify(new NotificationDTO(
+                    null,
+                    notificationDTO.title(),
+                    notificationDTO.content(),
+                    notificationDTO.type(),
+                    employeeDTO.id(),
+                    false,
+                    null
+            ));
         }
     }
 

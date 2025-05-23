@@ -23,6 +23,22 @@ public class NotificationResource {
         return Response.ok().build();
     }
 
+    @POST
+    @Path("/sendNotificationForAll")
+    @RolesAllowed({"ADMIN", "MOL"})
+    public Response sendNotificationForAll(@RequestBody NotificationDTO notificationDTO) {
+        notificationService.createNotifyForAll(notificationDTO);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/sendNotificationForDepartment/{id}")
+    @RolesAllowed({"ADMIN", "MOL"})
+    public Response sendNotificationForDepartment(@PathParam("id") Long id, @RequestBody NotificationDTO notificationDTO) {
+        notificationService.createNotifyForDepartment(id, notificationDTO);
+        return Response.ok().build();
+    }
+
     @GET
     @Path("/{id}")
     @RolesAllowed({"WORKER", "MOL"})

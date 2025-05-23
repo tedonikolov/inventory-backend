@@ -14,7 +14,7 @@ public class NotificationRepository implements PanacheRepository<Notification> {
     }
 
     public List<Notification> findByDepartment(long departmentId) {
-        return find("employee.department.id = ?1", departmentId).stream()
+        return find("employee.department.id = ?1 and type NOT LIKE \"MESSAGE\"", departmentId).stream()
                 .sorted((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt())).toList();
     }
 }
