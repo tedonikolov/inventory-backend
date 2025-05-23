@@ -39,6 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (employee.getPhoneToken() != null) {
             notificationSenderService.sendPushNotification(
                     employee.getPhoneToken(),
+                    employee.id,
                     notificationDTO.title(),
                     notificationDTO.content(),
                     notificationDTO.type()
