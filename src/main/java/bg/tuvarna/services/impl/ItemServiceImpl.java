@@ -1,7 +1,12 @@
 package bg.tuvarna.services.impl;
 
+import bg.tuvarna.enums.DepreciationType;
+import bg.tuvarna.enums.ItemStatus;
+import bg.tuvarna.enums.ItemType;
+import bg.tuvarna.enums.NotificationType;
 import bg.tuvarna.models.PageListing;
 import bg.tuvarna.models.dto.ItemDTO;
+import bg.tuvarna.models.dto.NotificationDTO;
 import bg.tuvarna.models.dto.requests.ItemFilter;
 import bg.tuvarna.models.dto.requests.ItemWithImageDTO;
 import bg.tuvarna.models.entities.Item;
@@ -10,12 +15,17 @@ import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
 import bg.tuvarna.services.CategoryService;
 import bg.tuvarna.services.ItemService;
+import bg.tuvarna.services.NotificationService;
 import bg.tuvarna.services.S3Service;
 import bg.tuvarna.services.converters.impl.ItemConverter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 @ApplicationScoped
@@ -24,12 +34,14 @@ public class ItemServiceImpl implements ItemService {
     private final ItemConverter converter;
     private final S3Service s3Service;
     private final CategoryService categoryService;
+    private final NotificationService notificationService;
 
-    public ItemServiceImpl(ItemRepository repository, ItemConverter converter, S3Service s3Service, CategoryService categoryService) {
+    public ItemServiceImpl(ItemRepository repository, ItemConverter converter, S3Service s3Service, CategoryService categoryService, NotificationService notificationService) {
         this.repository = repository;
         this.converter = converter;
         this.s3Service = s3Service;
         this.categoryService = categoryService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -107,5 +119,111 @@ public class ItemServiceImpl implements ItemService {
 
     private Item findItemByNumber(String number) {
         return repository.find("LOWER(number)", number.toLowerCase()).firstResult();
+    }
+
+    @Override
+    @Transactional
+    //TODO need a fix
+    public void changeAmortization() {
+        List<Item> activeFixedAssets = Item.list("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE);
+
+        LocalDate today = LocalDate.now();
+
+        for (Item item : activeFixedAssets) {
+            if (item.getExploitationDate() == null || item.getPrice() == null || item.getAmortization() == null) {
+                continue;
+            }
+
+            long yearsPassed = ChronoUnit.YEARS.between(item.getExploitationDate(), today);
+
+            if (item.getCategory().getDepreciationField() == DepreciationType.LINEAR) {
+                double annualRate = item.getCategory().getReductionStep() / 100;
+                double addedPercent = annualRate * yearsPassed;
+
+                double updatedPercent = item.getAmortization() + addedPercent;
+
+                if (item.getCategory().getMaxAmortizationBeforeScrap() != null) {
+                    double max = item.getCategory().getMaxAmortizationBeforeScrap();
+                    updatedPercent = Math.min(updatedPercent, max);
+                }
+
+                item.setAmortization(updatedPercent);
+                item.setToDate(today);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void transferItemsToMaterial() {
+        List<Item> activeFixedAssets = Item.list("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE);
+
+        for (Item item : activeFixedAssets) {
+            double currentPrice = item.getAmortizationPrice() * (1 - item.getAmortization() / 100);
+            if(item.getCategory().getDmaStep() >= currentPrice) {
+                item.setType(ItemType.MA);
+                repository.persist(item);
+                item.getCards().stream().filter(card -> card.getReturnDate()!=null).findFirst().ifPresent(card -> {
+                    notificationService.createNotify(new NotificationDTO(
+                            null,
+                            "Преобразуване на актив",
+                            "Актив с номер" + item.getNumber() + " беше преобразуван в материал",
+                            NotificationType.ASSET_TRANSFORMATION,
+                            card.getEmployee().id,
+                            false,
+                            null
+                    ));
+                });
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void performAutomaticScrapping() {
+        List<Item> activeFixedAssets = Item.list("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE);
+
+        LocalDate currentDate = LocalDate.now();
+
+        for (Item item : activeFixedAssets) {
+            if (item.getCategory() == null) {
+                continue;
+            }
+
+            Double maxAmortizationBeforeScrap = item.getCategory().getMaxAmortizationBeforeScrap();
+            Integer maxYearsInUse = item.getCategory().getMaxYearsInUse();
+
+            boolean shouldScrap = false;
+
+            if (maxAmortizationBeforeScrap != null && item.getPrice() != null && item.getPrice() > 0) {
+                if (item.getAmortization() >= maxAmortizationBeforeScrap) {
+                    shouldScrap = true;
+                }
+            }
+
+            if (!shouldScrap && maxYearsInUse != null && item.getAcquisitionDate() != null) {
+                int yearsInUse = Period.between(item.getAcquisitionDate(), currentDate).getYears();
+                if (yearsInUse >= maxYearsInUse) {
+                    shouldScrap = true;
+                }
+            }
+
+            if (shouldScrap) {
+                item.setStatus(ItemStatus.SCRAPED);
+                item.setDeregistrationDate(currentDate);
+                repository.persist(item);
+                item.getCards().stream().filter(card -> card.getReturnDate()!=null).findFirst().ifPresent(card -> {
+                    notificationService.createNotify(new NotificationDTO(
+                            null,
+                            "Бракуване на актив",
+                            "Актив с номер" + item.getNumber() + " беше автоматично бракуван",
+                            NotificationType.ASSET_TRANSFORMATION,
+                            card.getEmployee().id,
+                            false,
+                            null
+                    ));
+                });
+            }
+        }
     }
 }

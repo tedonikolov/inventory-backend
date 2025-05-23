@@ -11,4 +11,7 @@ public interface ItemService {
     Item findItemById(Long id);
     ItemDTO getItemById(Long id);
     PageListing<ItemDTO> getAllItems(ItemFilter filter);
+    void changeAmortization();
+    void transferItemsToMaterial();
+    void performAutomaticScrapping();
 }

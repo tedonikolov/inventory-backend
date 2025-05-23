@@ -49,7 +49,7 @@ public class NotificationResource {
     @GET
     @Path("/allForDepartment")
     @RolesAllowed({"MOL"})
-    public Response getMyUnreadNotifications(@QueryParam("departmentId") Long departmentId) {
+    public Response getAllForDepartment(@QueryParam("departmentId") Long departmentId) {
         return Response.ok(notificationService.getAllForDepartment(departmentId)).build();
     }
 

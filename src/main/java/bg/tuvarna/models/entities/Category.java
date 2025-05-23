@@ -11,6 +11,7 @@ import java.util.List;
 public class Category extends PanacheEntity {
     private String name;
     private DepreciationType depreciationField;
+    private Double dmaStep;
     private Double reductionStep;
     private Double maxAmortizationBeforeScrap;
     private Integer maxYearsInUse;
@@ -64,5 +65,13 @@ public class Category extends PanacheEntity {
 
     public void setMaxYearsInUse(Integer maxYearsInUse) {
         this.maxYearsInUse = maxYearsInUse;
+    }
+
+    public Double getDmaStep() {
+        return dmaStep;
+    }
+
+    public void setDmaStep(Double DMAStep) {
+        this.dmaStep = DMAStep;
     }
 }

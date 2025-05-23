@@ -1,0 +1,23 @@
+package bg.tuvarna.services.impl;
+
+import bg.tuvarna.services.ItemService;
+import jakarta.enterprise.context.ApplicationScoped;
+import io.quarkus.scheduler.Scheduled;
+import jakarta.transaction.Transactional;
+
+@ApplicationScoped
+public class SchedulerService {
+    private final ItemService itemService;
+
+    public SchedulerService(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+
+    @Scheduled(cron = "0 0 2 * * ?") // e.g., "0 0 2 * * ?" за всяка нощ в 2 AM
+    @Transactional
+    void performAutomaticScrapping() {
+        itemService.transferItemsToMaterial();
+        itemService.performAutomaticScrapping();
+    }
+}
