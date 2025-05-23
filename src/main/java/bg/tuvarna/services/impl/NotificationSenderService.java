@@ -11,7 +11,7 @@ import org.jboss.logging.Logger;
 public class NotificationSenderService {
     private static final Logger LOG = Logger.getLogger(NotificationSenderService.class);
 
-    public void sendPushNotification(String deviceToken, Long employeeId,String title, String body, NotificationType notificationType) {
+    public void sendPushNotification(String deviceToken, Long employeeId, Long departmentId, String title, String body, NotificationType notificationType) {
         try {
             Notification notification = Notification.builder()
                     .setTitle(title)
@@ -23,6 +23,7 @@ public class NotificationSenderService {
                     .setNotification(notification)
                     .putData("type", notificationType.name())
                     .putData("employeeId", employeeId.toString())
+                    .putData("departmentId", departmentId.toString())
                     .build();
 
             FirebaseMessaging.getInstance().send(message);
