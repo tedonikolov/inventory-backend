@@ -9,10 +9,12 @@ import java.util.List;
 public class NotificationRepository implements PanacheRepository<Notification> {
 
     public List<Notification> findByEmployeeId(long employeeId) {
-        return find("employee.id", employeeId).list();
+        return find("employee.id", employeeId).stream()
+                .sorted((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt())).toList();
     }
 
     public List<Notification> findByDepartment(long departmentId) {
-        return find("employee.department.id = ?1", departmentId).list();
+        return find("employee.department.id = ?1", departmentId).stream()
+                .sorted((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt())).toList();
     }
 }
