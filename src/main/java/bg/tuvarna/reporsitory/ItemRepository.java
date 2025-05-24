@@ -1,5 +1,7 @@
 package bg.tuvarna.reporsitory;
 
+import bg.tuvarna.enums.ItemStatus;
+import bg.tuvarna.enums.ItemType;
 import bg.tuvarna.models.PageListing;
 import bg.tuvarna.models.dto.requests.ItemFilter;
 import bg.tuvarna.models.entities.Item;
@@ -8,6 +10,8 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
+
+import java.util.List;
 
 @ApplicationScoped
 public class ItemRepository implements PanacheRepository<Item> {
@@ -29,5 +33,9 @@ public class ItemRepository implements PanacheRepository<Item> {
                 filter.getItemsPerPage(),
                 query.pageCount()
         );
+    }
+
+    public List<Item> activeItems() {
+        return find("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE).stream().toList();
     }
 }

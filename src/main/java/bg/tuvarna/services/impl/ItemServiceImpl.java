@@ -35,13 +35,15 @@ public class ItemServiceImpl implements ItemService {
     private final S3Service s3Service;
     private final CategoryService categoryService;
     private final NotificationService notificationService;
+    private final ItemRepository itemRepository;
 
-    public ItemServiceImpl(ItemRepository repository, ItemConverter converter, S3Service s3Service, CategoryService categoryService, NotificationService notificationService) {
+    public ItemServiceImpl(ItemRepository repository, ItemConverter converter, S3Service s3Service, CategoryService categoryService, NotificationService notificationService, ItemRepository itemRepository) {
         this.repository = repository;
         this.converter = converter;
         this.s3Service = s3Service;
         this.categoryService = categoryService;
         this.notificationService = notificationService;
+        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
 
             Item entity = converter.convertToEntity(dto);
 
-            if (!Objects.equals(entity.getCategory().id, dto.categoryId())) {
+            if (dto.categoryId() != null) {
                 entity.setCategory(categoryService.findCategoryById(dto.categoryId()));
             }
 
@@ -125,7 +127,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     //TODO need a fix
     public void changeAmortization() {
-        List<Item> activeFixedAssets = Item.list("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE);
+        List<Item> activeFixedAssets = repository.activeItems();
 
         LocalDate today = LocalDate.now();
 
@@ -134,21 +136,17 @@ public class ItemServiceImpl implements ItemService {
                 continue;
             }
 
-            long yearsPassed = ChronoUnit.YEARS.between(item.getExploitationDate(), today);
+            long yearsPassed = ChronoUnit.YEARS.between(item.getToDate()!=null ? item.getToDate() : item.getExploitationDate(), today);
 
             if (item.getCategory().getDepreciationField() == DepreciationType.LINEAR) {
                 double annualRate = item.getCategory().getReductionStep() / 100;
-                double addedPercent = annualRate * yearsPassed;
+                double addedPercent = annualRate * yearsPassed * 100;
 
                 double updatedPercent = item.getAmortization() + addedPercent;
 
-                if (item.getCategory().getMaxAmortizationBeforeScrap() != null) {
-                    double max = item.getCategory().getMaxAmortizationBeforeScrap();
-                    updatedPercent = Math.min(updatedPercent, max);
-                }
-
                 item.setAmortization(updatedPercent);
                 item.setToDate(today);
+                itemRepository.persist(item);
             }
         }
     }
@@ -156,14 +154,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public void transferItemsToMaterial() {
-        List<Item> activeFixedAssets = Item.list("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE);
+        List<Item> activeFixedAssets = repository.activeItems();
 
         for (Item item : activeFixedAssets) {
-            double currentPrice = item.getAmortizationPrice() * (1 - item.getAmortization() / 100);
-            if(item.getCategory().getDmaStep() >= currentPrice) {
+            if(item.getCategory().getDmaStep() >= item.getAmortization()) {
                 item.setType(ItemType.MA);
                 repository.persist(item);
-                item.getCards().stream().filter(card -> card.getReturnDate()!=null).findFirst().ifPresent(card -> {
+                item.getCards().stream().filter(card -> card.getReturnDate()==null).findFirst().ifPresent(card -> {
                     notificationService.createNotify(new NotificationDTO(
                             null,
                             "Преобразуване на актив",
@@ -181,7 +178,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public void performAutomaticScrapping() {
-        List<Item> activeFixedAssets = Item.list("type = ?1 and status = ?2", ItemType.DMA, ItemStatus.AVAILABLE);
+        List<Item> activeFixedAssets = repository.activeItems();
 
         LocalDate currentDate = LocalDate.now();
 
@@ -195,7 +192,7 @@ public class ItemServiceImpl implements ItemService {
 
             boolean shouldScrap = false;
 
-            if (maxAmortizationBeforeScrap != null && item.getPrice() != null && item.getPrice() > 0) {
+            if (maxAmortizationBeforeScrap != null) {
                 if (item.getAmortization() >= maxAmortizationBeforeScrap) {
                     shouldScrap = true;
                 }
@@ -212,7 +209,7 @@ public class ItemServiceImpl implements ItemService {
                 item.setStatus(ItemStatus.SCRAPED);
                 item.setDeregistrationDate(currentDate);
                 repository.persist(item);
-                item.getCards().stream().filter(card -> card.getReturnDate()!=null).findFirst().ifPresent(card -> {
+                item.getCards().stream().filter(card -> card.getReturnDate()==null).findFirst().ifPresent(card -> {
                     notificationService.createNotify(new NotificationDTO(
                             null,
                             "Бракуване на актив",
