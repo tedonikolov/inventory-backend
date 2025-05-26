@@ -10,6 +10,8 @@ import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @ApplicationScoped
 public class CardRepository implements PanacheRepository<Card> {
@@ -20,30 +22,66 @@ public class CardRepository implements PanacheRepository<Card> {
     }
 
     public PageListing<Card> findByFilter(CardFilter filter) {
-        PanacheQuery<Card> query = find(
-                "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(item.name, ' ', item.number)) LIKE :searchBy) and " +
-                        "(:type IS NULL OR item.type = :type) and " +
-                        "(:status IS NULL OR item.status = :status) and " +
-                        "(:category_id IS NULL OR item.category.id = :category_id) and " +
-                        "(:item_id IS NULL OR item.id = :item_id) and " +
-                        "(:department_id IS NULL OR employee.department.id = :department_id) and " +
-                        "(:employee_id IS NULL OR employee.id = :employee_id) and " +
-                        "(:dateIsNull IS NULL OR (returnDate IS NULL AND :dateIsNull = true) OR (returnDate IS NOT NULL AND :dateIsNull = false)) and " +
-                        "(:fromDate IS NULL OR borrowDate >= CAST(:fromDate AS DATE)) and " +
-                        "(:toDate IS NULL OR borrowDate <= CAST(:toDate AS DATE))",
-                Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
-                        .and("type", filter.getType())
-                        .and("status", filter.getStatus())
-                        .and("category_id", filter.getCategoryId())
-                        .and("item_id", filter.getItemId())
-                        .and("department_id", filter.getDepartmentId())
-                        .and("employee_id", filter.getEmployeeId())
-                        .and("dateIsNull", !filter.isReturned())
-                        .and("fromDate", filter.getFromDate())
-                        .and("toDate", filter.getToDate()))
+        StringBuilder queryBuilder = new StringBuilder("1=1");
+        Map<String, Object> params = new HashMap<>();
+
+        if (filter.getSearchBy() != null && !filter.getSearchBy().isEmpty()) {
+            queryBuilder.append(" AND LOWER(concat(item.name, ' ', item.number)) LIKE :searchBy");
+            params.put("searchBy", "%" + filter.getSearchBy().toLowerCase() + "%");
+        }
+
+        if (filter.getType() != null) {
+            queryBuilder.append(" AND item.type = :type");
+            params.put("type", filter.getType());
+        }
+
+        if (filter.getStatus() != null) {
+            queryBuilder.append(" AND item.status = :status");
+            params.put("status", filter.getStatus());
+        }
+
+        if (filter.getCategoryId() != null) {
+            queryBuilder.append(" AND item.category.id = :category_id");
+            params.put("category_id", filter.getCategoryId());
+        }
+
+        if (filter.getItemId() != null) {
+            queryBuilder.append(" AND item.id = :item_id");
+            params.put("item_id", filter.getItemId());
+        }
+
+        if (filter.getDepartmentId() != null) {
+            queryBuilder.append(" AND employee.department.id = :department_id");
+            params.put("department_id", filter.getDepartmentId());
+        }
+
+        if (filter.getEmployeeId() != null) {
+            queryBuilder.append(" AND employee.id = :employee_id");
+            params.put("employee_id", filter.getEmployeeId());
+        }
+
+        if (filter.isReturned() != null) {
+            if (filter.isReturned()) {
+                queryBuilder.append(" AND returnDate IS NOT NULL");
+            } else {
+                queryBuilder.append(" AND returnDate IS NULL");
+            }
+        }
+
+        if (filter.getFromDate() != null) {
+            queryBuilder.append(" AND borrowDate >= :fromDate");
+            params.put("fromDate", filter.getFromDate());
+        }
+
+        if (filter.getToDate() != null) {
+            queryBuilder.append(" AND borrowDate <= :toDate");
+            params.put("toDate", filter.getToDate());
+        }
+
+        PanacheQuery<Card> query = find(queryBuilder.toString(), params)
                 .page(Page.of(filter.getPage() - 1, filter.getItemsPerPage()));
 
-        return new PageListing<Card>(
+        return new PageListing<>(
                 query.stream().toList(),
                 filter.getPage(),
                 filter.getItemsPerPage(),
