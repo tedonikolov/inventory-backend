@@ -169,7 +169,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> activeFixedAssets = repository.activeItems();
 
         for (Item item : activeFixedAssets) {
-            if (item.getCategory().getDmaStep() >= item.getAmortization()) {
+            if (item.getCategory().getMaxAmortizationForTypeChange() != null && item.getCategory().getMaxAmortizationForTypeChange() >= item.getAmortization()) {
                 item.setType(ItemType.MA);
                 repository.persist(item);
                 item.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().ifPresent(card -> {

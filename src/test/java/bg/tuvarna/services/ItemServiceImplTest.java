@@ -55,7 +55,7 @@ class ItemServiceImplTest {
         category.setDepreciationField(DepreciationType.LINEAR);
         category.setReductionStep(30.0);
         category.setMaxAmortizationBeforeScrap(80.0);
-        category.setDmaStep(70.0);
+        category.setMaxAmortizationForTypeChange(70.0);
         category.setMaxYearsInUse(2);
         categoryRepository.persist(category);
         this.category = category;

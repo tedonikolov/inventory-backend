@@ -12,7 +12,7 @@ public class CategoryConverter implements Converter<CategoryDTO, Category> {
         return new CategoryDTO(entity.id,
                 entity.getName(),
                 entity.getDepreciationField(),
-                entity.getDmaStep(),
+                entity.getMaxAmortizationForTypeChange(),
                 entity.getReductionStep(),
                 entity.getMaxAmortizationBeforeScrap(),
                 entity.getMaxYearsInUse()
@@ -24,7 +24,7 @@ public class CategoryConverter implements Converter<CategoryDTO, Category> {
         Category category = new Category();
         category.setName(dto.name());
         category.setDepreciationField(dto.depreciationField());
-        category.setDmaStep(dto.dmaStep());
+        category.setMaxAmortizationForTypeChange(dto.maxAmortizationForTypeChange());
         category.setReductionStep(dto.reductionStep());
         category.setMaxAmortizationBeforeScrap(dto.maxAmortizationBeforeScrap());
         category.setMaxYearsInUse(dto.maxYearsInUse());

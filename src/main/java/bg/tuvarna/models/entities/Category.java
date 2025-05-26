@@ -11,9 +11,9 @@ import java.util.List;
 public class Category extends PanacheEntity {
     private String name;
     private DepreciationType depreciationField;
-    private Double dmaStep;
     private Double reductionStep;
     private Double maxAmortizationBeforeScrap;
+    private Double maxAmortizationForTypeChange;
     private Integer maxYearsInUse;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
@@ -67,11 +67,11 @@ public class Category extends PanacheEntity {
         this.maxYearsInUse = maxYearsInUse;
     }
 
-    public Double getDmaStep() {
-        return dmaStep;
+    public Double getMaxAmortizationForTypeChange() {
+        return maxAmortizationForTypeChange;
     }
 
-    public void setDmaStep(Double DMAStep) {
-        this.dmaStep = DMAStep;
+    public void setMaxAmortizationForTypeChange(Double maxAmortizationForTypeChange) {
+        this.maxAmortizationForTypeChange = maxAmortizationForTypeChange;
     }
 }
