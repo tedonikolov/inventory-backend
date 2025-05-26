@@ -17,6 +17,7 @@ public class SchedulerService {
     @Scheduled(cron = "0 0 2 * * ?") // e.g., "0 0 2 * * ?" за всяка нощ в 2 AM
     @Transactional
     void performAutomaticScrapping() {
+        itemService.changeAmortization();
         itemService.transferItemsToMaterial();
         itemService.performAutomaticScrapping();
     }
