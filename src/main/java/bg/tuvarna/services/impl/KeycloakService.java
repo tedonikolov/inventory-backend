@@ -10,20 +10,28 @@ import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.hibernate.service.spi.InjectService;
 import org.jboss.logmanager.Level;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.token.TokenService;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.*;
 
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -43,6 +51,9 @@ public class KeycloakService {
     String clientId;
     @ConfigProperty(name = "quarkus.oidc.client-server-url")
     String clientServerUri;
+
+    @RestClient
+    TokenService tokenService;
 
     private Keycloak getKeycloakClient() {
         return KeycloakBuilder.builder()
@@ -135,18 +146,17 @@ public class KeycloakService {
     }
 
     public LoginResponse refreshAccessToken(String refreshToken) {
-        Keycloak keycloak = KeycloakBuilder.builder()
-                .serverUrl(clientServerUri)
-                .realm(realm)
-                .grantType(OAuth2Constants.REFRESH_TOKEN)
-                .authorization(refreshToken)
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .build();
+        MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
+        form.add("grant_type", "refresh_token");
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+        form.add("refresh_token", refreshToken);
+
+        AccessTokenResponse response = tokenService.refreshToken(realm, form);
 
         return new LoginResponse(
-                keycloak.tokenManager().getAccessTokenString(),
-                keycloak.tokenManager().getAccessToken().getRefreshToken()
+                response.getToken(),
+                response.getRefreshToken()
         );
     }
 
