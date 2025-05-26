@@ -5,6 +5,8 @@ import bg.tuvarna.enums.ItemType;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 
+import java.time.LocalDate;
+
 public class CardFilter {
     @QueryParam("searchBy")
     private String searchBy;
@@ -22,6 +24,10 @@ public class CardFilter {
     private Long employeeId;
     @QueryParam("returned")
     private Boolean returned;
+    @QueryParam("fromDate")
+    private LocalDate fromDate;
+    @QueryParam("toDate")
+    private LocalDate toDate;
     @QueryParam("itemsPerPage")
     @DefaultValue("10")
     private Integer itemsPerPage;
@@ -59,6 +65,14 @@ public class CardFilter {
 
     public Boolean isReturned() {
         return returned;
+    }
+
+    public LocalDate getFromDate() {
+        return fromDate;
+    }
+
+    public LocalDate getToDate() {
+        return toDate;
     }
 
     public Integer getItemsPerPage() {
