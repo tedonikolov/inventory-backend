@@ -5,6 +5,7 @@ import bg.tuvarna.enums.ProfileRole;
 import bg.tuvarna.models.dto.requests.ChangePasswordDTO;
 import bg.tuvarna.models.dto.response.LoggedUser;
 import bg.tuvarna.models.dto.requests.LoginDTO;
+import bg.tuvarna.models.dto.response.LoginResponse;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
 import bg.tuvarna.services.impl.KeycloakService;
@@ -30,6 +31,8 @@ public class ProfileResource {
     RoutingContext context;
 
     private final KeycloakService keycloakService;
+    @Inject
+    HttpHeaders httpHeaders;
 
     public ProfileResource(KeycloakService keycloakService) {
         this.keycloakService = keycloakService;
@@ -61,9 +64,22 @@ public class ProfileResource {
     @PermitAll
     public Response loginUser(@RequestBody LoginDTO user) {
         try {
-            String token = keycloakService.loginUser(user.getUsername(), user.getPassword(), context);
+            LoginResponse response = keycloakService.loginUser(user.getUsername(), user.getPassword(), context);
 
-            return Response.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
+            return Response.ok().header("Refresh", response.refreshToken()).header(HttpHeaders.AUTHORIZATION, "Bearer " + response.token()).build();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), ErrorCode.WrongCredentials);
+        }
+    }
+
+    @Path("/refresh")
+    @POST
+    @PermitAll
+    public Response refresh(@HeaderParam("Refresh") String token) {
+        try {
+            LoginResponse response = keycloakService.refreshAccessToken(token);
+
+            return Response.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + response.token()).build();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), ErrorCode.WrongCredentials);
         }

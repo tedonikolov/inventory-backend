@@ -5,12 +5,12 @@ import bg.tuvarna.enums.ProfileRole;
 import bg.tuvarna.models.dto.ChangeRoleDTO;
 import bg.tuvarna.models.dto.requests.ChangePasswordDTO;
 import bg.tuvarna.models.dto.requests.CreateUserDTO;
+import bg.tuvarna.models.dto.response.LoginResponse;
 import bg.tuvarna.resources.execptions.CustomException;
 import bg.tuvarna.resources.execptions.ErrorCode;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -110,7 +110,7 @@ public class KeycloakService {
         }
     }
 
-    public String loginUser(String username, String password, RoutingContext request) {
+    public LoginResponse loginUser(String username, String password, RoutingContext request) {
         try {
             Keycloak keycloak = KeycloakBuilder.builder()
                     .serverUrl(clientServerUri)
@@ -121,7 +121,10 @@ public class KeycloakService {
                     .username(username)
                     .password(password)
                     .build();
-            return keycloak.tokenManager().getAccessTokenString();
+            return new LoginResponse(
+                    keycloak.tokenManager().getAccessTokenString(),
+                    keycloak.tokenManager().getAccessToken().getRefreshToken()
+            );
         } catch (Exception e) {
             String ipAddress = request.request().remoteAddress().hostAddress();
 
@@ -129,6 +132,22 @@ public class KeycloakService {
 
             throw new RuntimeException("Invalid credentials");
         }
+    }
+
+    public LoginResponse refreshAccessToken(String refreshToken) {
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(clientServerUri)
+                .realm(realm)
+                .grantType(OAuth2Constants.REFRESH_TOKEN)
+                .authorization(refreshToken)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build();
+
+        return new LoginResponse(
+                keycloak.tokenManager().getAccessTokenString(),
+                keycloak.tokenManager().getAccessToken().getRefreshToken()
+        );
     }
 
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
