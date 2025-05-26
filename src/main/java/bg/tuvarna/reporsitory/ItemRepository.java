@@ -8,34 +8,62 @@ import bg.tuvarna.models.entities.Item;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class ItemRepository implements PanacheRepository<Item> {
     public PageListing<Item> findByFilter(ItemFilter filter) {
-        PanacheQuery<Item> query = find(
-                "(:searchBy IS NULL OR :searchBy = '' OR LOWER(concat(name, ' ', number)) LIKE :searchBy) and " +
-                        "(:type IS NULL OR type = :type) and " +
-                        "(:status IS NULL OR status = :status) and " +
-                        "(:category_id IS NULL OR category.id = :category_id)",
-                "(:fromAcquisitionDate IS NULL OR acquisitionDate >= CAST(:fromAcquisitionDate AS DATE)) and " +
-                        "(:toAcquisitionDate IS NULL OR acquisitionDate <= CAST(:toAcquisitionDate AS DATE)) and " +
-                        "(:fromScrapingDate IS NULL OR scrapingDate >= CAST(:fromScrapingDate AS DATE)) and " +
-                        "(:toScrapingDate IS NULL OR scrapingDate <= CAST(:toScrapingDate AS DATE))",
-                Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
-                        .and("type", filter.getType())
-                        .and("status", filter.getStatus())
-                        .and("category_id", filter.getCategoryId())
-                        .and("fromAcquisitionDate", filter.getFromAcquisitionDate())
-                        .and("toAcquisitionDate", filter.getToAcquisitionDate())
-                        .and("fromScrapingDate", filter.getFromScrapingDate())
-                        .and("toScrapingDate", filter.getToScrapingDate()))
+        StringBuilder queryBuilder = new StringBuilder("1=1");
+        Map<String, Object> params = new HashMap<>();
+
+        if (filter.getSearchBy() != null && !filter.getSearchBy().isEmpty()) {
+            queryBuilder.append(" AND LOWER(concat(name, ' ', number)) LIKE :searchBy");
+            params.put("searchBy", "%" + filter.getSearchBy().toLowerCase() + "%");
+        }
+
+        if (filter.getType() != null) {
+            queryBuilder.append(" AND type = :type");
+            params.put("type", filter.getType());
+        }
+
+        if (filter.getStatus() != null) {
+            queryBuilder.append(" AND status = :status");
+            params.put("status", filter.getStatus());
+        }
+
+        if (filter.getCategoryId() != null) {
+            queryBuilder.append(" AND category.id = :category_id");
+            params.put("category_id", filter.getCategoryId());
+        }
+
+        if (filter.getFromAcquisitionDate() != null) {
+            queryBuilder.append(" AND acquisitionDate >= :fromAcquisitionDate");
+            params.put("fromAcquisitionDate", filter.getFromAcquisitionDate());
+        }
+
+        if (filter.getToAcquisitionDate() != null) {
+            queryBuilder.append(" AND acquisitionDate <= :toAcquisitionDate");
+            params.put("toAcquisitionDate", filter.getToAcquisitionDate());
+        }
+
+        if (filter.getFromScrapingDate() != null) {
+            queryBuilder.append(" AND scrapingDate >= :fromScrapingDate");
+            params.put("fromScrapingDate", filter.getFromScrapingDate());
+        }
+
+        if (filter.getToScrapingDate() != null) {
+            queryBuilder.append(" AND scrapingDate <= :toScrapingDate");
+            params.put("toScrapingDate", filter.getToScrapingDate());
+        }
+
+        PanacheQuery<Item> query = find(queryBuilder.toString(), params)
                 .page(Page.of(filter.getPage() - 1, filter.getItemsPerPage()));
 
-        return new PageListing<Item>(
+        return new PageListing<>(
                 query.stream().toList(),
                 filter.getPage(),
                 filter.getItemsPerPage(),
