@@ -31,8 +31,6 @@ public class ProfileResource {
     RoutingContext context;
 
     private final KeycloakService keycloakService;
-    @Inject
-    HttpHeaders httpHeaders;
 
     public ProfileResource(KeycloakService keycloakService) {
         this.keycloakService = keycloakService;
