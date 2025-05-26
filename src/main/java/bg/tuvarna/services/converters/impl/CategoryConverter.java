@@ -36,6 +36,7 @@ public class CategoryConverter implements Converter<CategoryDTO, Category> {
         entity.setName(dto.name());
         entity.setDepreciationField(dto.depreciationField());
         entity.setReductionStep(dto.reductionStep());
+        entity.setMaxAmortizationForTypeChange(dto.maxAmortizationForTypeChange());
         entity.setMaxAmortizationBeforeScrap(dto.maxAmortizationBeforeScrap());
         entity.setMaxYearsInUse(dto.maxYearsInUse());
         return entity;
