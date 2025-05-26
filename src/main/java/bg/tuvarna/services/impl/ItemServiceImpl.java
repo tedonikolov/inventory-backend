@@ -62,6 +62,19 @@ public class ItemServiceImpl implements ItemService {
                 entity.setCategory(categoryService.findCategoryById(dto.categoryId()));
             }
 
+            if (dto.status() != entity.getStatus() || dto.type() != entity.getType()) {
+                entity.setDeregistrationDate(LocalDate.now());
+                notificationService.createNotify(new NotificationDTO(
+                        null,
+                        "Променен актив",
+                        "Променен статус на актив с номер " + entity.getNumber(),
+                        NotificationType.SCRAP,
+                        entity.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().orElseThrow().getEmployee().id,
+                        false,
+                        null
+                ));
+            }
+
             repository.persist(converter.updateEntity(entity, dto));
 
             setImage(entity, request);
@@ -125,7 +138,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    //TODO need a fix
     public void changeAmortization() {
         List<Item> activeFixedAssets = repository.activeItems();
 
@@ -136,7 +148,7 @@ public class ItemServiceImpl implements ItemService {
                 continue;
             }
 
-            long yearsPassed = ChronoUnit.YEARS.between(item.getToDate()!=null ? item.getToDate() : item.getExploitationDate(), today);
+            long yearsPassed = ChronoUnit.YEARS.between(item.getToDate() != null ? item.getToDate() : item.getExploitationDate(), today);
 
             if (item.getCategory().getDepreciationField() == DepreciationType.LINEAR) {
                 double annualRate = item.getCategory().getReductionStep() / 100;
@@ -157,10 +169,10 @@ public class ItemServiceImpl implements ItemService {
         List<Item> activeFixedAssets = repository.activeItems();
 
         for (Item item : activeFixedAssets) {
-            if(item.getCategory().getDmaStep() >= item.getAmortization()) {
+            if (item.getCategory().getDmaStep() >= item.getAmortization()) {
                 item.setType(ItemType.MA);
                 repository.persist(item);
-                item.getCards().stream().filter(card -> card.getReturnDate()==null).findFirst().ifPresent(card -> {
+                item.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().ifPresent(card -> {
                     notificationService.createNotify(new NotificationDTO(
                             null,
                             "Преобразуване на актив",
@@ -209,12 +221,12 @@ public class ItemServiceImpl implements ItemService {
                 item.setStatus(ItemStatus.SCRAPED);
                 item.setDeregistrationDate(currentDate);
                 repository.persist(item);
-                item.getCards().stream().filter(card -> card.getReturnDate()==null).findFirst().ifPresent(card -> {
+                item.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().ifPresent(card -> {
                     notificationService.createNotify(new NotificationDTO(
                             null,
                             "Бракуване на актив",
                             "Актив с номер" + item.getNumber() + " беше автоматично бракуван",
-                            NotificationType.ASSET_TRANSFORMATION,
+                            NotificationType.SCRAP,
                             card.getEmployee().id,
                             false,
                             null
