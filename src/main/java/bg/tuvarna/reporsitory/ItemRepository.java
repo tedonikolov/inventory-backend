@@ -21,10 +21,10 @@ public class ItemRepository implements PanacheRepository<Item> {
                         "(:type IS NULL OR type = :type) and " +
                         "(:status IS NULL OR status = :status) and " +
                         "(:category_id IS NULL OR category.id = :category_id)",
-                "(:fromAcquisitionDate IS NULL OR acquisitionDate >= :fromAcquisitionDate) and " +
-                        "(:toAcquisitionDate IS NULL OR acquisitionDate <= :toAcquisitionDate) and " +
-                        "(:fromScrapingDate IS NULL OR scrapingDate >= :fromScrapingDate) and " +
-                        "(:toScrapingDate IS NULL OR scrapingDate <= :toScrapingDate)",
+                "(:fromAcquisitionDate IS NULL OR acquisitionDate >= CAST(:fromAcquisitionDate AS DATE)) and " +
+                        "(:toAcquisitionDate IS NULL OR acquisitionDate <= CAST(:toAcquisitionDate AS DATE)) and " +
+                        "(:fromScrapingDate IS NULL OR scrapingDate >= CAST(:fromScrapingDate AS DATE)) and " +
+                        "(:toScrapingDate IS NULL OR scrapingDate <= CAST(:toScrapingDate AS DATE))",
                 Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())

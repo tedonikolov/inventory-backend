@@ -29,8 +29,8 @@ public class CardRepository implements PanacheRepository<Card> {
                         "(:department_id IS NULL OR employee.department.id = :department_id) and " +
                         "(:employee_id IS NULL OR employee.id = :employee_id) and " +
                         "(:dateIsNull IS NULL OR (returnDate IS NULL AND :dateIsNull = true) OR (returnDate IS NOT NULL AND :dateIsNull = false)) and " +
-                        "(:fromDate IS NULL OR borrowDate >= :fromDate) and " +
-                        "(:toDate IS NULL OR borrowDate <= :toDate)",
+                        "(:fromDate IS NULL OR borrowDate >= CAST(:fromDate AS DATE)) and " +
+                        "(:toDate IS NULL OR borrowDate <= CAST(:toDate AS DATE))",
                 Parameters.with("searchBy", filter.getSearchBy() != null ? "%" + filter.getSearchBy().toLowerCase() + "%" : null)
                         .and("type", filter.getType())
                         .and("status", filter.getStatus())
