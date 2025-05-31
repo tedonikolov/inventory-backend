@@ -63,16 +63,24 @@ public class ItemServiceImpl implements ItemService {
             }
 
             if (dto.status() != entity.getStatus() || dto.type() != entity.getType()) {
-                entity.setDeregistrationDate(LocalDate.now());
-                notificationService.createNotify(new NotificationDTO(
-                        null,
-                        "Променен актив",
-                        "Променен статус на актив с номер " + entity.getNumber(),
-                        NotificationType.SCRAP,
-                        entity.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().orElseThrow().getEmployee().id,
-                        false,
-                        null
-                ));
+                if(dto.status()==ItemStatus.SCRAPED)
+                    entity.setDeregistrationDate(LocalDate.now());
+                entity.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().ifPresent(card -> {
+                    if(dto.status()==ItemStatus.SCRAPED) {
+                        card.setReturnDate(LocalDate.now());
+                        card.persist();
+                    }
+
+                    notificationService.createNotify(new NotificationDTO(
+                            null,
+                            "Променен актив",
+                            "Променен статус на актив с номер " + entity.getNumber(),
+                            NotificationType.SCRAP,
+                            card.getEmployee().id,
+                            false,
+                            null
+                    ));
+                });
             }
 
             repository.persist(converter.updateEntity(entity, dto));
@@ -222,6 +230,9 @@ public class ItemServiceImpl implements ItemService {
                 item.setDeregistrationDate(currentDate);
                 repository.persist(item);
                 item.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().ifPresent(card -> {
+                    card.setReturnDate(currentDate);
+                    card.persist();
+
                     notificationService.createNotify(new NotificationDTO(
                             null,
                             "Бракуване на актив",
