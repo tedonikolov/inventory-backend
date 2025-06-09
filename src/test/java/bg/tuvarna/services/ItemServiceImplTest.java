@@ -65,13 +65,18 @@ class ItemServiceImplTest {
     @Order(1)
     @Transactional
     void save_NewItem_Success(){
-        ItemDTO dto = new ItemDTO(null, "1233", "Item", 1250.0, 250.0, 1000.0, ItemType.DMA, LocalDate.now().minusYears(1), LocalDate.now().minusYears(1), ItemStatus.AVAILABLE, 0.0, null, null, 1L, null);
+        ItemDTO dto = new ItemDTO(null, "1233", "Item", 1250.0, 250.0,
+                1000.0, ItemType.DMA, LocalDate.now().minusYears(1), LocalDate.now().minusYears(1),
+                ItemStatus.AVAILABLE, 0.0, null, null, 1L, null);
         ItemWithImageDTO request = new ItemWithImageDTO();
         request.setDto(dto);
 
         itemService.save(request);
 
-        dto = new ItemDTO(null, "1234", "Item", 1250.0, 250.0, 1000.0, ItemType.DMA, LocalDate.now().minusYears(3), LocalDate.now().minusYears(3), ItemStatus.AVAILABLE, 40.0, LocalDate.now().minusYears(1), null, 1L, null);
+        dto = new ItemDTO(null, "1234", "Item", 1250.0, 250.0,
+                1000.0, ItemType.DMA, LocalDate.now().minusYears(3),
+                LocalDate.now().minusYears(3), ItemStatus.AVAILABLE, 40.0,
+                LocalDate.now().minusYears(1), null, 1L, null);
         request = new ItemWithImageDTO();
         request.setDto(dto);
 
@@ -90,7 +95,9 @@ class ItemServiceImplTest {
     @Test
     @Order(2)
     void save_ExistingItemNumber_ThrowsException() {
-        ItemDTO dto = new ItemDTO(null, "1233", "Item", 1250.0, 250.0, 1000.0, ItemType.DMA, LocalDate.of(2025,1,1), null, ItemStatus.AVAILABLE, 0.0, null, null, 1L,null);
+        ItemDTO dto = new ItemDTO(null, "1233", "Item", 1250.0, 250.0,
+                1000.0, ItemType.DMA, LocalDate.of(2025,1,1), null,
+                ItemStatus.AVAILABLE, 0.0, null, null, 1L,null);
         ItemWithImageDTO request = new ItemWithImageDTO();
 
         request.setDto(dto);
@@ -154,7 +161,7 @@ class ItemServiceImplTest {
 
         assertEquals(ItemStatus.SCRAPED, item.getStatus());
         assertEquals(LocalDate.now(), item.getDeregistrationDate());
-        verify(notificationService).createNotify(argThat(n -> n.type() == NotificationType.ASSET_TRANSFORMATION));
+        verify(notificationService).createNotify(argThat(n -> n.type() == NotificationType.SCRAP));
     }
 
     @Test
@@ -174,6 +181,7 @@ class ItemServiceImplTest {
         item.setCategory(category);
         item.setAmortization(10.0);
         item.setAcquisitionDate(LocalDate.now().minusYears(3));
+        item.setExploitationDate(LocalDate.now().minusYears(3));
         item.setNumber("item-123");
         item.persist();
 
@@ -187,8 +195,8 @@ class ItemServiceImplTest {
 
         itemService.performAutomaticScrapping();
 
-        assertEquals(ItemStatus.SCRAPED, item.getStatus()); // capped at max
-        assertEquals(LocalDate.now(), item.getDeregistrationDate()); // capped at max
-        verify(notificationService).createNotify(argThat(n -> n.type() == NotificationType.ASSET_TRANSFORMATION));
+        assertEquals(ItemStatus.SCRAPED, item.getStatus());
+        assertEquals(LocalDate.now(), item.getDeregistrationDate());
+        verify(notificationService).createNotify(argThat(n -> n.type() == NotificationType.SCRAP));
     }
 }

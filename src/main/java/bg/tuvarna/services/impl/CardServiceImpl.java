@@ -48,7 +48,6 @@ public class CardServiceImpl implements CardService {
         } else {
             throw new CustomException("Item is already in use", ErrorCode.AlreadyExists);
         }
-
     }
 
     @Override

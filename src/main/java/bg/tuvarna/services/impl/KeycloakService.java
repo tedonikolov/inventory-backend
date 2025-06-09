@@ -198,7 +198,6 @@ public class KeycloakService {
         ClientRepresentation client = new ClientRepresentation();
         client.setClientId(clientId);
         client.setSecret(clientSecret);
-//        client.setAuthorizationServicesEnabled(true);
         client.setEnabled(true);
         client.setDirectAccessGrantsEnabled(true);
         client.setPublicClient(false);

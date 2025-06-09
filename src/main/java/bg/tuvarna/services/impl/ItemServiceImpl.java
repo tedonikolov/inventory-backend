@@ -156,7 +156,8 @@ public class ItemServiceImpl implements ItemService {
                 continue;
             }
 
-            long yearsPassed = ChronoUnit.YEARS.between(item.getToDate() != null ? item.getToDate() : item.getExploitationDate(), today);
+            long yearsPassed = ChronoUnit.YEARS.between(item.getToDate() != null ?
+                    item.getToDate() : item.getExploitationDate(), today);
 
             if (item.getCategory().getDepreciationField() == DepreciationType.LINEAR) {
                 double annualRate = item.getCategory().getReductionStep() / 100;
@@ -177,7 +178,8 @@ public class ItemServiceImpl implements ItemService {
         List<Item> activeFixedAssets = repository.activeItems();
 
         for (Item item : activeFixedAssets) {
-            if (item.getCategory().getMaxAmortizationForTypeChange() != null && item.getCategory().getMaxAmortizationForTypeChange() >= item.getAmortization()) {
+            if (item.getCategory().getMaxAmortizationForTypeChange() != null &&
+                    item.getCategory().getMaxAmortizationForTypeChange() >= item.getAmortization()) {
                 item.setType(ItemType.MA);
                 repository.persist(item);
                 item.getCards().stream().filter(card -> card.getReturnDate() == null).findFirst().ifPresent(card -> {
@@ -217,14 +219,12 @@ public class ItemServiceImpl implements ItemService {
                     shouldScrap = true;
                 }
             }
-
-            if (!shouldScrap && maxYearsInUse != null && item.getAcquisitionDate() != null) {
-                int yearsInUse = Period.between(item.getAcquisitionDate(), currentDate).getYears();
+            if (!shouldScrap && maxYearsInUse != null && item.getExploitationDate() != null) {
+                int yearsInUse = Period.between(item.getExploitationDate(), currentDate).getYears();
                 if (yearsInUse >= maxYearsInUse) {
                     shouldScrap = true;
                 }
             }
-
             if (shouldScrap) {
                 item.setStatus(ItemStatus.SCRAPED);
                 item.setDeregistrationDate(currentDate);

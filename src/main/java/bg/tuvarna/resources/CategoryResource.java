@@ -49,7 +49,7 @@ public class CategoryResource {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = DepartmentDTO.class)))
     })
-    public Response getDepartment(@PathParam("id") Long id) {
+    public Response getCategory(@PathParam("id") Long id) {
         return Response.ok(service.getCategoryById(id)).build();
     }
 
@@ -62,7 +62,7 @@ public class CategoryResource {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = DepartmentDTO.class)))
     })
-    public Response getAllDepartments() {
+    public Response getAllCategories() {
         return Response.ok(service.getAllCategories()).build();
     }
 }
